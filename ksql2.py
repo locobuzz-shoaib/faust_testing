@@ -24,14 +24,11 @@ CREATE TABLE parent_post_aggregates4 AS
 SELECT
     socialid,
     COUNT(*) AS comment_count,
-    MAX(numlikes) AS like_count,
-    WINDOWSTART AS window_start,
-    WINDOWEND AS window_end
+    MAX(numlikes) AS like_count
 FROM finaldata_stream
-WINDOW TUMBLING (SIZE 1 MINUTES)
-WHERE postsocialid IS NULL
+WHERE numlikes > 200 AND numcomments > 111
 GROUP BY socialid
-HAVING MAX(numlikes) > 200  AND COUNT(*) > 1;
+EMIT CHANGES;
 """
 
 drop_statements = [
@@ -60,6 +57,6 @@ if __name__ == "__main__":
     # send_ksqldb_statement(create_stream_statement)
 
     # Create the table
-    for statement in drop_statements:
-        send_ksqldb_statement(statement)
-    # send_ksqldb_statement(drop_statements)
+    # for statement in drop_statements:
+    #     send_ksqldb_statement(statement)
+    send_ksqldb_statement(create_table_statement)
