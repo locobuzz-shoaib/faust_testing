@@ -20,16 +20,26 @@ CREATE STREAM finaldata_stream (
 
 # ksqlDB statement to create the table with the required aggregations
 create_table_statement = """
-CREATE TABLE parent_post_aggregates AS
+CREATE TABLE parent_post_aggregates4 AS
 SELECT
     socialid,
     COUNT(*) AS comment_count,
-    MAX(numlikes) AS like_count
+    MAX(numlikes) AS like_count,
+    WINDOWSTART AS window_start,
+    WINDOWEND AS window_end
 FROM finaldata_stream
+WINDOW TUMBLING (SIZE 1 MINUTES)
 WHERE postsocialid IS NULL
 GROUP BY socialid
-HAVING COUNT(*) > 10 AND MAX(numlikes) >= 50;
+HAVING MAX(numlikes) > 200  AND COUNT(*) > 1;
 """
+
+drop_statements = [
+    "DROP TABLE parent_post_aggregates2 IF EXISTS CASCADE;",
+    "DROP TABLE parent_post_aggregates3 IF EXISTS CASCADE;",
+    "DROP TABLE parent_post_aggregates4 IF EXISTS CASCADE;",
+    "DROP STREAM finaldata_stream IF EXISTS CASCADE;"
+]
 
 
 # Function to send ksqlDB statements
@@ -47,7 +57,9 @@ def send_ksqldb_statement(statement):
 
 if __name__ == "__main__":
     # Create the stream
-    send_ksqldb_statement(create_stream_statement)
+    # send_ksqldb_statement(create_stream_statement)
 
     # Create the table
-    send_ksqldb_statement(create_table_statement)
+    for statement in drop_statements:
+        send_ksqldb_statement(statement)
+    # send_ksqldb_statement(drop_statements)
