@@ -42,5 +42,5 @@ def produce_fake_data(num_messages):
 
 if __name__ == '__main__':
     print(f'Starting to produce 1000 fake data messages to Kafka topic: {KAFKA_TOPIC}')
-    produce_fake_data(1000)
+    produce_fake_data(10000)
     print('Finished producing 1000 messages.')
