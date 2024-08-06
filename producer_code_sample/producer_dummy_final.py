@@ -10,7 +10,7 @@ fake = Faker()
 
 # Kafka Producer configuration
 producer_conf = {
-    'bootstrap.servers': '172.18.244.10:9092'
+    'bootstrap.servers': 'localhost:9092'
 }
 
 # Create Kafka Producer

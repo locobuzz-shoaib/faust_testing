@@ -1,7 +1,7 @@
 import requests
 
 # ksqlDB server URL
-KSQLDB_SERVER_URL = "http://172.18.244.10:8088"
+KSQLDB_SERVER_URL = "http://localhost:8088"
 
 # ksqlDB statement to create the stream
 create_stream_statement = """
@@ -54,7 +54,7 @@ def send_ksqldb_statement(statement):
 
 if __name__ == "__main__":
     # Create the stream
-    # send_ksqldb_statement(create_stream_statement)
+    send_ksqldb_statement(create_stream_statement)
 
     # Create the table
     # for statement in drop_statements:
