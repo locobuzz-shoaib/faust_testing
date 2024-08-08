@@ -1,29 +1,22 @@
 import requests
 
 # ksqlDB server URL
-KSQLDB_SERVER_URL = "http://localhost:8088"
+KSQLDB_SERVER_URL = "http://192.168.0.102:8088"
 
 # ksqlDB query to create the final_data_stream stream with composite keys
 create_final_data_stream_query = """
 CREATE STREAM final_data_stream (
-    tagid STRING,
-    mentionid STRING,
-    createddate BIGINT,
-    uniqueid STRING,
-    categoryid STRING,
-    brandid STRING,
-    socialid STRING,
-    postsocialid STRING,
-    channel STRING,
-    post_type STRING,
-    sentiment STRING,
-    description STRING,
-    PRIMARY KEY (tagid, createddate, uniqueid, categoryid, brandid)
+  mention_id STRING,
+  sentiment STRING,
+  channel STRING,
+  mention_time TIMESTAMP
 ) WITH (
-    KAFKA_TOPIC='finaldata',
-    VALUE_FORMAT='JSON'
+  KAFKA_TOPIC='finaldata',
+  VALUE_FORMAT='JSON',
+  TIMESTAMP='mention_time'
 );
 """
+
 
 # Function to execute ksqlDB query
 def execute_ksqldb_query(query):
