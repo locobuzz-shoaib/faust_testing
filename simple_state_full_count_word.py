@@ -5,7 +5,7 @@ class Word(faust.Record):
     word: str
 
 
-app = faust.App('word_count_app', broker='kafka://172.18.244.10:9092')
+app = faust.App('word_count_app', broker='kafka://localhost:9092')
 
 words_topic = app.topic('words_topic', value_type=Word)
 counts_table = app.Table('word_counts', default=int)

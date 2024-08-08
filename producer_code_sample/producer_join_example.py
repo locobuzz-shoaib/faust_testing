@@ -74,9 +74,9 @@ def produce_data():
             updateddata_matching = generate_fake_updateddata(postsocialid=matching_socialid)
 
             # Produce matching records
-            producer.produce('finaldata', key=finaldata_matching['mentionid'], value=json.dumps(finaldata_matching),
+            producer.produce('AlertFinalData',  value=json.dumps(finaldata_matching),
                              callback=delivery_report)
-            producer.produce('updateddata', key=updateddata_matching['mentionid'],
+            producer.produce('AlertUpdatedData',
                              value=json.dumps(updateddata_matching), callback=delivery_report)
 
             # Generate finaldata without matching socialid
@@ -84,9 +84,9 @@ def produce_data():
             updateddata_non_matching = generate_fake_updateddata(fake.uuid4())
 
             # Produce non-matching records
-            producer.produce('finaldata', key=finaldata_non_matching['mentionid'],
+            producer.produce('AlertFinalData',
                              value=json.dumps(finaldata_non_matching), callback=delivery_report)
-            producer.produce('updateddata', key=updateddata_non_matching['mentionid'],
+            producer.produce('AlertUpdatedData',
                              value=json.dumps(updateddata_non_matching), callback=delivery_report)
 
             producer.poll(0)
