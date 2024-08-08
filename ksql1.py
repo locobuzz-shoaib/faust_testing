@@ -24,7 +24,7 @@ CREATE STREAM final_data_stream (
     VALUE_FORMAT='JSON'
 );
 """
-
+1
 # Function to execute ksqlDB query
 def execute_ksqldb_query(query):
     response = requests.post(
