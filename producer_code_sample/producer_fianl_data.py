@@ -6,11 +6,9 @@ from datetime import datetime
 from confluent_kafka import Producer
 from faker import Faker
 
-
-
 # Kafka configuration
 conf = {
-    'bootstrap.servers': 'localhost:9092',  # Update with your Kafka broker(s)
+    'bootstrap.servers': '192.168.0.102:9092',  # Update with your Kafka broker(s)
     'client.id': 'alert_data_producer'
 }
 
@@ -70,7 +68,12 @@ def generate_alert_data(start_date):
         "TypeofComment": random.randint(1, 10),
         "OrderID": random.randint(1, 1000),
         "IsHistoric": random.choice([True, False]),
-
+        "AttachmentXML": (
+            "<Attachments><Item><Name>ThumbnailURL</Name><MediaType>3</MediaType>"
+            "<Url>http://www.youtube.com/watch?v=nb5s-4mEUto</Url>"
+            "<ThumbUrl>https://s3.amazonaws.com/locobuzz.socialimages/348d9162-abfd-469e-a165-847b9520a029_1.jpg</ThumbUrl>"
+            "<json/></Item></Attachments>"
+        ),
         "MentionMD5": faker.md5(),
         "Content": faker.text(),
         "NRESentimentScore": round(random.uniform(0, 1), 2),
@@ -85,6 +88,7 @@ def generate_alert_data(start_date):
         "UserInfoIsVerified": random.choice([True, False]),
         "PicUrl": faker.image_url()
     }
+    print(f"Start date is: {data}")
     return data
 
 
@@ -93,24 +97,30 @@ def send_alert_data_to_kafka(topic, start_date, num_messages=10):
     for _ in range(num_messages):
         current_time = generate_random_datetime_on_same_day(start_date)
         data = generate_alert_data(current_time)
-        producer.produce(topic, value=json.dumps(data))
+        key_data = json.dumps({
+            "BrandID": data["BrandID"],
+            "CategoryID": data["CategoryID"]
+        })
+        producer.produce(topic, key=key_data, value=json.dumps(data))
         producer.poll(1)
         time.sleep(1)
         print(f"Message Produced")
     # Ensure all messages are sent
     producer.flush()
 
+
 # Function to generate a random datetime within the same day
 def generate_random_datetime_on_same_day(date):
     start_datetime = datetime.combine(date, datetime.min.time())  # Start of the day
-    end_datetime = datetime.combine(date, datetime.max.time())    # End of the day
+    end_datetime = datetime.combine(date, datetime.max.time())  # End of the day
     random_datetime = faker.date_time_between(start_date=start_datetime, end_date=end_datetime)
     formatted_datetime = random_datetime.strftime('%Y-%m-%dT%H:%M:%S')
     return formatted_datetime
 
+
 # Usage
 if __name__ == "__main__":
     start_date = datetime(2024, 8, 9)
-    end_date = datetime(2024, 8, 9)
-    send_alert_data_to_kafka('updatedata', start_date, num_messages=50)
+    end_date = datetime(2024, 8, 10)
+    send_alert_data_to_kafka('updateddata', start_date, num_messages=50)
     print("Data sent to Kafka topic.")

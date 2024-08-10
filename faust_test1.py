@@ -1,7 +1,7 @@
 from typing import Optional
 
 import faust
-
+# 'kafka://172.18.244.10:9092'
 app = faust.App('alert_app', broker='kafka://172.18.244.10:9092')
 
 
