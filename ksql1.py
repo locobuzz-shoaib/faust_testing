@@ -84,7 +84,7 @@ CREATE OR REPLACE STREAM ALERT_UPDATED_DATA_STREAM (
     ChannelType INT,
     ChannelGroupID INT,
     Description STRING,
-    SocialID STRING,
+    SocialID STRING key,
     NumLikesORFollowers STRING,
     NumLikesCount INT,
     NumComments INT,
