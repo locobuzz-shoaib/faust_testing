@@ -13,14 +13,18 @@ producer = Producer(conf)
 
 # JSON data to be sent
 data = {
-    "BrandID": 954,
-    "CategoryID": 96,
-    "SocialID": "28d40f80-a0ad-4971-9323-cb1926e6effc",
-    "NumComments": 60,
-    "NumLikesCount": 10051,
-    "NumShareCount": 8009,
-    "NumVideoViews": 9611,
-    "CreatedDate": "2024-08-09T18:17:22",
+    "BrandID": 397,
+    "CategoryID": 29,
+    "SocialID": "19452808-6a99-434f-bb20-5e800e901def",
+    "Tagid": "ed15a45a-e12b-4921-b926-b2a217215fd6",
+    "MentionMD5": "7cd946375d1eb853c2c7766b96ec7de2",
+
+    "NumShareCount": 1222,
+
+    "Reach": 496506,
+    "Impression": 22717,
+    "Engagement": 219420,
+    "CreatedDate": "2024-08-09T22:51:00",
 }
 
 
@@ -29,7 +33,10 @@ def send_data_to_kafka(topic, data):
     key_data = json.dumps({
         "BrandID": data["BrandID"],
         "CategoryID": data["CategoryID"],
-        "SocialID": data["SocialID"]
+        "SocialID": data["SocialID"],
+        "Tagid": data["Tagid"],
+        "MentionMD5": data["MentionMD5"],
+        "CreatedDate": data["CreatedDate"]
     })
     producer.produce(topic, key=key_data, value=json.dumps(data))
     producer.poll(1)

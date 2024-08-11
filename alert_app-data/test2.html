@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Locobuzz Alert</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        /* General Styles */
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #e3f2fd;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            background-color: #ffffff;
+            max-width: 500px;
+            width: 100%;
+            border-radius: 16px;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+            text-align: center;
+            padding: 40px 30px;
+        }
+
+        /* Logo and Header */
+        .logo {
+            width: 180px;
+            margin-bottom: 40px;
+        }
+
+        .alert-header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 30px;
+        }
+
+        .alert-header img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            margin-right: 15px;
+        }
+
+        .alert-header h2 {
+            margin: 0;
+            font-size: 22px;
+            font-weight: 700;
+            color: #2e3a59;
+        }
+        .password-label {
+    font-size: 16px;
+    font-weight: 500; /* Medium weight */
+    color: #616161;
+    margin: 0;
+}
+
+.password-value {
+    font-size: 22px;
+    font-weight: 700; /* Bold weight */
+    color: #d32f2f; /* Material UI red color */
+    margin: 5px 0 0 0; /* Slight top margin for spacing */
+}
+
+        /* Alert Box */
+        .alert-box {
+            background-color: #e3f2fd;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+
+        .alert-box p {
+            margin: 0;
+            font-size: 16px;
+            color: #616161;
+        }
+
+        .alert-box h1 {
+            margin: 15px 0;
+            font-size: 24px;
+            font-weight: 700;
+            color: #2e3a59;
+        }
+
+        .password {
+            font-size: 20px;
+            font-weight: 700;
+            color: #d32f2f;
+            margin: 0;
+        }
+
+        /* Button */
+        .btn {
+            background-color: #1976d2;
+            color: #ffffff;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            text-transform: uppercase;
+            font-weight: 500;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            margin-top: 20px;
+        }
+
+        .btn:hover {
+            background-color: #1565c0;
+        }
+
+        /* Footer */
+        .footer {
+            font-size: 14px;
+            color: #757575;
+            margin-top: 40px;
+        }
+
+        .footer a {
+            color: #1976d2;
+            text-decoration: none;
+            margin: 0 5px;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        .footer img {
+            width: 25px;
+            height: 25px;
+            margin: 0 8px;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 600px) {
+            .container {
+                padding: 30px 20px;
+            }
+
+            .alert-header h2 {
+                font-size: 20px;
+            }
+
+            .alert-box h1 {
+                font-size: 22px;
+            }
+
+            .password {
+                font-size: 18px;
+            }
+
+            .btn {
+                width: 100%;
+                font-size: 15px;
+            }
+
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+    <!-- Logo -->
+    <img src="https://via.placeholder.com/180x50?text=Locobuzz" alt="Locobuzz Logo" class="logo">
+
+    <!-- Header -->
+    <div class="alert-header">
+        <img src="https://via.placeholder.com/50?text=N" alt="Netflix Logo">
+        <h2>Netflix</h2>
+    </div>
+
+    <!-- Alert Box -->
+    <div class="alert-box">
+        <p>Alert Name</p>
+        <h1>Negative Mentions: Action Needed</h1>
+        <p class="password-label">Password</p>
+        <p class="password-value">NXEJU</p>
+    </div>
+
+    <!-- Button -->
+    <a href="#" class="btn">View Dashboard</a>
+
+    <!-- Footer -->
+    <div class="footer">
+        <p>Copyright © Locobuzz 2024 | <a href="#">Terms and Conditions</a> | <a href="#">Privacy Policy</a></p>
+        <p><a href="mailto:customersuccess@locobuzz.com">customersuccess@locobuzz.com</a></p>
+        <p>
+            <a href="#"><img src="https://via.placeholder.com/25?text=F" alt="Facebook"></a>
+            <a href="#"><img src="https://via.placeholder.com/25?text=T" alt="Twitter"></a>
+            <a href="#"><img src="https://via.placeholder.com/25?text=I" alt="Instagram"></a>
+            <a href="#"><img src="https://via.placeholder.com/25?text=L" alt="LinkedIn"></a>
+        </p>
+    </div>
+</div>
+
+</body>
+
+</html>

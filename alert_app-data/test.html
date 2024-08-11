@@ -7,114 +7,407 @@
     <title>Locobuzz Alert</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
+    <style>
+        body {
+            font-family: 'Roboto', Arial, sans-serif;
+            background-color: #f4f6f9;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 20px auto;
+            background-color: #fff;
+            border: 1px solid #d8dee2;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+        }
+
+        header {
+            background-color: #e6f7ff;
+            padding: 15px 20px;
+            border-bottom: 2px solid #0073e6;
+        }
+
+        .header-section {
+            background-color: #ffffff;
+            border-radius: 8px;
+            padding: 20px;
+            max-width: 600px;
+            margin: 20px auto;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .header-section-brand {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            font-weight: 700;
+            font-size: 1.2rem;
+        }
+
+        .mx {
+            margin-right: 0.5rem;
+            margin-left: 0.5rem;
+        }
+
+        .mr {
+            margin-right: 0.5rem;
+        }
+
+        .ml {
+            margin-left: 0.5rem;
+        }
+
+        .header-content {
+            display: flex;
+            align-items: center;
+        }
+
+        .logo {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-right: 15px;
+        }
+
+        .alert-details {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .alert-name {
+            font-size: 14px;
+            color: #909090;
+            margin: 0;
+        }
+
+        .alert-details h1 {
+            font-size: 20px;
+            color: #2C3D67;
+            margin: 5px 0 0 0;
+        }
+
+        .negative-text {
+            color: #d32f2f;
+            padding-right: 5px;
+            font-weight: 700;
+        }
+
+        .selected-section {
+            display: flex;
+            margin-left: 20px;
+            font-weight: 400;
+            color: #2C3D67;
+        }
+
+        .d-flex {
+            display: flex;
+        }
+
+        .mentions-overview {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+
+        .mention-box {
+            width: 22%;
+            padding: 10px;
+            border-radius: 8px;
+            background-color: #f0f2f5;
+            font-weight: 300;
+        }
+
+        .mention-box-text {
+            color: #4d5d89;
+        }
+
+        .mentions-text {
+            color: #4d5d89 !important;
+        }
+
+        .mention-box-text-size {
+            font-size: 40px !important;
+            font-weight: 700;
+        }
+
+        .mention-box h4 {
+            margin: 0;
+            font-size: 24px;
+        }
+
+        .mention-box p {
+            margin: 0;
+            font-size: 14px;
+            color: #909090;
+        }
+
+        .positive {
+            background-color: #e0f7ea;
+            color: #388e3c !important;
+        }
+
+        .negative {
+            background-color: #ffebee;
+            color: #d32f2f !important;
+        }
+
+        .neutral {
+            background-color: #fff8e1;
+            color: #f9a825 !important;
+        }
+
+        .mentions-list {
+            padding: 20px;
+        }
+
+        .text-primary {
+            color: #2C3D67;
+        }
+
+        .text-secondary {
+            color: #8d909f;
+        }
+
+        .fw-500 {
+            font-weight: 500;
+        }
+
+        .fw-300 {
+            font-weight: 300;
+        }
+
+        .mention-item {
+            border: 1px solid #DAE2FF;
+            border-radius: 8px;
+            background: #F3F3FD;
+            margin-bottom: 10px;
+        }
+
+        .mention-item-main {
+            background: #ffffff;
+            border-radius: 8px;
+            padding: 10px;
+        }
+
+        .mention-item:last-child {
+            border-bottom: none;
+        }
+
+        .mention-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            justify-content: space-between;
+        }
+
+        .mention-header img {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+
+        .mention-engagement {
+            color: #2C3D67;
+            font-weight: 500;
+            margin-left: 5px;
+        }
+
+        .mention-engagement-icon-color {
+            color: #C3C6D6;
+        }
+
+        .dateTime-Text {
+            color: #8790ad;
+        }
+
+        .mention-engagement span {
+            margin-right: 15px;
+            display: inline-flex;
+            align-items: center;
+        }
+
+        .mention-engagement .material-icons {
+            font-size: 18px;
+            margin-right: 5px;
+        }
+
+        .mention-link a {
+            color: #0073e6;
+            text-decoration: none;
+        }
+
+        .mention-link {
+            display: flex;
+            padding: 10px 13px;
+            align-items: center;
+        }
+
+        .mention-link-icon {
+            color: #6d7692;
+            margin-right: 5px;
+        }
+
+        .footer {
+            padding: 20px;
+            text-align: center;
+            background-color: #f9f9f9;
+            border-top: 1px solid #ddd;
+        }
+
+        .footer-links a {
+            color: #0073e6;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .footer-links a:hover {
+            text-decoration: underline;
+        }
+
+        .footer p {
+            margin: 10px 0 0;
+            font-size: 12px;
+            color: #999;
+        }
+
+        .login-btn {
+            background-color: #0073e6;
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .login-btn:hover {
+            background-color: #005bb5;
+        }
+    </style>
 </head>
 
 <body>
-<div class="container">
-    <div class="header-section">
-    <div class="header-content">
-        <img src="https://via.placeholder.com/50x50?text=N" alt="Netflix Logo" class="logo">
-        <div class="alert-details">
-            <p class="alert-name">Alert Name</p>
-            <h1>Negative Mentions: Action Needed</h1>
-        </div>
-    </div>
-    <div class="mentions-overview">
-        <div class="mention-box">
-            <p>Mentions</p>
-            <h4>24</h4>
-        </div>
-        <div class="mention-box positive">
-            <p>Positive</p>
-            <h4>6</h4>
-        </div>
-        <div class="mention-box negative">
-            <p>Negative</p>
-            <h4>3</h4>
-        </div>
-        <div class="mention-box neutral">
-            <p>Neutral</p>
-            <h4>15</h4>
-        </div>
-    </div>
-</div>
-
-
-    <div class="mentions-list">
-        <!-- Mention Item Start -->
-        <div class="mention-item">
-            <div class="mention-header">
-                <img src="https://via.placeholder.com/40x40?text=JD" alt="User Avatar">
-                <div>
-                    <p><strong>John Doe</strong> (@Johndoe)</p>
-                    <p>8.8K followers - 5 Aug, 12:13PM</p>
+    <div class="container">
+        <div class="header-section">
+            <div class="header-section-brand"><img src="C:\Users\admin\Desktop\Screenshot 2024-08-11 151902.png" alt="Netflix Logo" class="logo">
+                <div>Netflix</div>
+            </div>
+            <div class="header-content">
+                <div class="alert-details">
+                    <p class="alert-name">Alert Name</p>
+                    <h1 class="#2C3D67;">Negative Mentions: Action Needed</h1>
                 </div>
             </div>
-            <p>@netflix Figma ipsum component variant main layer...</p>
-            <div class="mention-engagement">
-                <span><i class="material-icons">thumb_up</i> 2,174</span>
-                <span><i class="material-icons">repeat</i> 89</span>
-                <span><i class="material-icons">comment</i> 63</span>
-            </div>
-            <div class="mention-link">
-                <a href="#">12172/78/184693832838571</a>
-            </div>
-        </div>
-        <!-- Mention Item End -->
-
-        <!-- Mention Item Start -->
-        <div class="mention-item">
-            <div class="mention-header">
-                <img src="https://via.placeholder.com/40x40?text=SS" alt="User Avatar">
-                <div>
-                    <p><strong>Sarvesh Shinde</strong> (@sarvesh_shinde)</p>
-                    <p>67.4K followers - 5 Aug, 12:13PM</p>
+            <div class="mentions-overview">
+                <div class="mention-box mr">
+                    <p class="mentions-text">Mentions</p>
+                    <p class="mentions-text mention-box-text-size">24</p>
+                </div>
+                <div class="mention-box mx positive">
+                    <p class="positive">Positive</p>
+                    <p class="positive mention-box-text-size">6</p>
+                </div>
+                <div class="mention-box mx negative">
+                    <p class="negative">Negative</p>
+                    <p class="mention-box-text-size negative">3</p>
+                </div>
+                <div class="mention-box ml neutral">
+                    <p class="neutral">Neutral</p>
+                    <p class="neutral mention-box-text-size">15</p>
                 </div>
             </div>
-            <p>@netflix Figma ipsum component variant main layer...</p>
-            <div class="mention-engagement">
-                <span><i class="material-icons">thumb_up</i> 2,174</span>
-                <span><i class="material-icons">repeat</i> 89</span>
-                <span><i class="material-icons">comment</i> 63</span>
-            </div>
-            <div class="mention-link">
-                <a href="#">12172/78/184693832838571</a>
-            </div>
         </div>
-        <!-- Mention Item End -->
+        <div class="selected-section">
+            <span class="negative-text">Negative</span>
+            <span class="">Mentions</span>
+        </div>
 
-        <!-- Mention Item Start -->
-        <div class="mention-item">
-            <div class="mention-header">
-                <img src="https://via.placeholder.com/40x40?text=SJ" alt="User Avatar">
-                <div>
-                    <p><strong>Shreya Jain</strong> (@trickytraveler)</p>
-                    <p>6.87K followers - 5 Aug, 12:13PM</p>
+        <div class="mentions-list">
+            <!-- Mention Item Start -->
+            <div class="mention-item">
+                <div class="mention-item-main">
+                    <div class="mention-header">
+                        <div class="d-flex">
+                            <img src="https://via.placeholder.com/40x40?text=JD" class="image-size" alt="User Avatar">
+                            <img src="https://via.placeholder.com/40x40?text=JD" class="image-size" alt="User Avatar">
+                            <span class="text-primary fw-500">John Doe
+                                <span class="text-secondary fw-300">(@Johndoe)</span>
+                            </span>
+                            <span class="text-primary fw-500">8.8K</span>
+                        </div>
+                        <div class="dateTime-Text">
+                            5 Aug, 12:13PM
+                        </div>
+                    </div>
+                    <p>@netflix Figma ipsum component variant main layer...</p>
+                    <div class="mention-engagement">
+                        <span><i class="material-icons mention-engagement-icon-color">thumb_up</i> 2,174</span>
+                        <span><i class="material-icons mention-engagement-icon-color">repeat</i> 89</span>
+                        <span><i class="material-icons mention-engagement-icon-color">comment</i> 63</span>
+                    </div>
+                </div>
+                <div class="mention-link">
+                    <i class="material-icons mention-link-icon">comment</i>
+                    <a href="#">12172/78/184693832838571</a>
                 </div>
             </div>
-            <p>@netflix Figma ipsum component variant main layer...</p>
-            <div class="mention-engagement">
-                <span><i class="material-icons">thumb_up</i> 2,174</span>
-                <span><i class="material-icons">repeat</i> 89</span>
-                <span><i class="material-icons">comment</i> 63</span>
-            </div>
-            <div class="mention-link">
-                <a href="#">12172/78/184693832838571</a>
-            </div>
-        </div>
-        <!-- Mention Item End -->
-    </div>
+            <!-- Mention Item End -->
 
-    <div class="footer">
-        <button class="login-btn">🔒 Login</button>
-        <div class="footer-links">
-            <a href="#">Terms and Conditions</a> |
-            <a href="#">Privacy Policy</a>
+            <!-- Mention Item Start -->
+            <div class="mention-item">
+                <div class="mention-header">
+                    <img src="https://via.placeholder.com/40x40?text=SS" alt="User Avatar">
+                    <div>
+                        <p><strong>Sarvesh Shinde</strong> (@sarvesh_shinde)</p>
+                        <p>67.4K followers - 5 Aug, 12:13PM</p>
+                    </div>
+                </div>
+                <p>@netflix Figma ipsum component variant main layer...</p>
+                <div class="mention-engagement">
+                    <span><i class="material-icons">thumb_up</i> 2,174</span>
+                    <span><i class="material-icons">repeat</i> 89</span>
+                    <span><i class="material-icons">comment</i> 63</span>
+                </div>
+                <div class="mention-link">
+                    <a href="#">12172/78/184693832838571</a>
+                </div>
+            </div>
+            <!-- Mention Item End -->
+
+            <!-- Mention Item Start -->
+            <div class="mention-item">
+                <div class="mention-header">
+                    <img src="https://via.placeholder.com/40x40?text=SJ" alt="User Avatar">
+                    <div>
+                        <p><strong>Shreya Jain</strong> (@trickytraveler)</p>
+                        <p>6.87K followers - 5 Aug, 12:13PM</p>
+                    </div>
+                </div>
+                <p>@netflix Figma ipsum component variant main layer...</p>
+                <div class="mention-engagement">
+                    <span><i class="material-icons">thumb_up</i> 2,174</span>
+                    <span><i class="material-icons">repeat</i> 89</span>
+                    <span><i class="material-icons">comment</i> 63</span>
+                </div>
+                <div class="mention-link">
+                    <a href="#">12172/78/184693832838571</a>
+                </div>
+            </div>
+            <!-- Mention Item End -->
         </div>
-        <p>Copyright © Locobuzz 2024</p>
+
+        <div class="footer">
+            <button class="login-btn">🔒 Login</button>
+            <div class="footer-links">
+                <a href="#">Terms and Conditions</a> |
+                <a href="#">Privacy Policy</a>
+            </div>
+            <p>Copyright © Locobuzz 2024</p>
+        </div>
     </div>
-</div>
 </body>
 
 </html>
