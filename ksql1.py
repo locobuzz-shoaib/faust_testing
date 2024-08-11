@@ -6,15 +6,16 @@ KSQLDB_SERVER_URL = "http://192.168.0.102:8088"
 # ksqlDB query to create the final_data_stream stream with composite keys
 create_final_data_stream_query = """
 CREATE OR REPLACE STREAM ALERT_FINAL_DATA_STREAM (
-    BrandID INT key,
+    Composite_Key STRING key,
+    BrandID INT,
     BrandName STRING,
     CategoryGroupID INT,
-    CategoryID INT key,
+    CategoryID INT,
     CategoryName STRING,
     ChannelType INT,
     ChannelGroupID INT,
     Description STRING,
-    SocialID STRING key,
+    SocialID STRING,
     NumLikesORFollowers STRING,
     NumLikesCount INT,
     NumComments INT,
@@ -22,12 +23,12 @@ CREATE OR REPLACE STREAM ALERT_FINAL_DATA_STREAM (
     NumShareCount INT,
     NumVideoViews INT,
     ShareCount INT,
-    CreatedDate STRING key,
+    CreatedDate STRING,
     SentimentType INT,
     PassivePositiveSentimentCount INT,
     NegativeSentimentCount INT,
     NeutralSentimentCount INT,
-    Tagid STRING key,
+    Tagid STRING,
     UpperCategoryID INT,
     IsDeleted BOOLEAN,
     SimplifiedText STRING,
@@ -52,7 +53,7 @@ CREATE OR REPLACE STREAM ALERT_FINAL_DATA_STREAM (
     TypeofComment INT,
     OrderID INT,
     IsHistoric BOOLEAN,
-    MentionMD5 STRING key,
+    MentionMD5 STRING,
     Content STRING,
     NRESentimentScore DOUBLE,
     InsertedDate STRING,
@@ -70,7 +71,7 @@ CREATE OR REPLACE STREAM ALERT_FINAL_DATA_STREAM (
         KAFKA_TOPIC='finaldata',
         VALUE_FORMAT='JSON',
         TIMESTAMP='CreatedDate',
-        KEY_FORMAT='JSON',
+        KEY_FORMAT='KAFKA',
         TIMESTAMP_FORMAT='yyyy-MM-dd''T''HH:mm:ss'
 );
 """
@@ -84,7 +85,6 @@ CREATE OR REPLACE STREAM ALERT_UPDATED_DATA_STREAM (
     CategoryName STRING,
     ChannelType INT,
     ChannelGroupID INT,
-    Description STRING,
     SocialID STRING key,
     NumLikesORFollowers STRING,
     NumLikesCount INT,
@@ -105,15 +105,12 @@ CREATE OR REPLACE STREAM ALERT_UPDATED_DATA_STREAM (
     Rating DOUBLE,
     IsVerified BOOLEAN,
     RetweetedStatusID BIGINT,
-    InReplyToStatusId BIGINT,
     MediaType STRING,
     Reach INT,
     Impression INT,
     Engagement INT,
     CategoryXML STRING,
     MediaEnum INT,
-    Lang STRING,
-    LanguageName STRING,
     PostType INT,
     IsBrandPost BOOLEAN,
     InstagramPostType INT,
@@ -126,22 +123,14 @@ CREATE OR REPLACE STREAM ALERT_UPDATED_DATA_STREAM (
     MentionMD5 STRING key,
     Content STRING,
     NRESentimentScore DOUBLE,
-    InsertedDate STRING,
-    AuthorSocialID STRING,
-    AuthorName STRING,
-    UserInfoScreenName STRING,
-    Bio STRING,
     FollowersCount INT,
     FollowingCount INT,
-    TweetCount INT,
-    UserInfoIsVerified BOOLEAN,
-    PicUrl STRING,
-    AttachmentXML STRING
+    TweetCount INT
 ) WITH (
-   KAFKA_TOPIC='updateddata',
+  KAFKA_TOPIC='updateddata',
   VALUE_FORMAT='JSON',
   TIMESTAMP='CreatedDate',
-  'KEY_FORMAT'='JSON',
+  KEY_FORMAT='JSON',
   TIMESTAMP_FORMAT='yyyy-MM-dd''T''HH:mm:ss'    
 );
 """
@@ -301,6 +290,71 @@ def execute_ksqldb_query(query):
     else:
         print(f"Failed to execute query: {response.status_code}, {response.text}")
 
+joined_filterd_stream = """
+CREATE STREAM joined_filtered_posts AS
+    SELECT 
+        s.BrandID AS BrandID,
+        s.BrandName AS BrandName,
+        s.CategoryGroupID AS CategoryGroupID,
+        s.CategoryID AS CategoryID,
+        s.CategoryName AS CategoryName,
+        s.ChannelType AS ChannelType,
+        s.ChannelGroupID AS ChannelGroupID,
+        s.Description AS Description,
+        s.SocialID AS SocialID,
+        s.CreatedDate AS CreatedDate,
+        s.SentimentType AS SentimentType,
+        s.PassivePositiveSentimentCount AS PassivePositiveSentimentCount,
+        s.NegativeSentimentCount AS NegativeSentimentCount,
+        s.NeutralSentimentCount AS NeutralSentimentCount,
+        s.Tagid AS Tagid,
+        s.UpperCategoryID AS UpperCategoryID,
+        s.IsDeleted AS IsDeleted,
+        s.SimplifiedText AS SimplifiedText,
+        s.Rating AS Rating,
+        s.IsVerified AS IsVerified,
+        s.RetweetedStatusID AS RetweetedStatusID,
+        s.InReplyToStatusId AS InReplyToStatusId,
+        s.MediaType AS MediaType,
+        COALESCE(LATEST_BY_OFFSET(a.NumLikesCount), s.NumLikesCount) AS NumLikesCount,
+        COALESCE(LATEST_BY_OFFSET(a.NumComments), s.NumComments) AS NumComments,
+        COALESCE(LATEST_BY_OFFSET(a.NumShareCount), s.NumShareCount) AS NumShareCount,
+        COALESCE(LATEST_BY_OFFSET(a.NumVideoViews), s.NumVideoViews) AS NumVideoViews,
+        COALESCE(LATEST_BY_OFFSET(a.Reach), s.Reach) AS Reach,
+        COALESCE(LATEST_BY_OFFSET(a.Impression), s.Impression) AS Impression,
+        COALESCE(LATEST_BY_OFFSET(a.Engagement), s.Engagement) AS Engagement,
+        s.CategoryXML AS CategoryXML,
+        s.MediaEnum AS MediaEnum,
+        s.Lang AS Lang,
+        s.LanguageName AS LanguageName,
+        s.PostType AS PostType,
+        s.IsBrandPost AS IsBrandPost,
+        s.InstagramPostType AS InstagramPostType,
+        s.SettingID AS SettingID,
+        s.quotedTweetCounts AS QuotedTweetCounts,
+        s.InfluencerCategory AS InfluencerCategory,
+        s.TypeofComment AS TypeofComment,
+        s.OrderID AS OrderID,
+        s.IsHistoric AS IsHistoric,
+        s.MentionMD5 AS MentionMD5,
+        s.Content AS Content,
+        s.NRESentimentScore AS NRESentimentScore,
+        s.InsertedDate AS InsertedDate,
+        s.AuthorSocialID AS AuthorSocialID,
+        s.AuthorName AS AuthorName,
+        s.UserInfoScreenName AS UserInfoScreenName,
+        s.Bio AS Bio,
+        s.FollowersCount AS FollowersCount,
+        s.FollowingCount AS FollowingCount,
+        s.TweetCount AS TweetCount,
+        s.UserInfoIsVerified AS UserInfoIsVerified,
+        s.PicUrl AS PicUrl,
+        s.AttachmentXML AS AttachmentXML
+    FROM ALERT_FINAL_DATA_STREAM s
+    LEFT JOIN aggregated_table a
+    ON s.BrandID = a.BrandID
+    EMIT CHANGES;
+"""
 
 if __name__ == "__main__":
     # Create the final_data_stream stream
