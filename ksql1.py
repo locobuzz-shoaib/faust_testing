@@ -295,7 +295,7 @@ def execute_ksqldb_query(query):
 
 
 joined_filterd_stream = """
-CREATE TABLE koined_posts7 WITH (KEY_FORMAT='KAFKA',  TIMESTAMP='CreatedDate',TIMESTAMP_FORMAT='yyyy-MM-dd''T''HH:mm:ss') AS 
+CREATE TABLE koined_posts11 WITH (KEY_FORMAT='KAFKA',  TIMESTAMP='CreatedDate',TIMESTAMP_FORMAT='yyyy-MM-dd''T''HH:mm:ss') AS 
 SELECT 
     s.Composite_Key AS Composite_Key,
     LATEST_BY_OFFSET(s.BrandID) AS BrandID,
@@ -356,15 +356,86 @@ SELECT
     LATEST_BY_OFFSET(s.PicUrl) AS PicUrl,
     LATEST_BY_OFFSET(s.AttachmentXML) AS AttachmentXML
 FROM ALERT_FINAL_DATA_STREAM2 s
-LEFT JOIN aggregated_table a
+LEFT JOIN aggregated_table2 a
     ON s.Composite_Key = a.Composite_Key
-    GROUP BY s.Composite_Key
 EMIT CHANGES;
 
 """
 
+joined_2="""
+CREATE TABLE koined_posts9 WITH (
+    KEY_FORMAT = 'KAFKA',
+    VALUE_FORMAT = 'JSON',
+    TIMESTAMP = 'CreatedDate',
+    TIMESTAMP_FORMAT = 'yyyy-MM-dd''T''HH:mm:ss'
+) AS 
+SELECT 
+    s.Composite_Key AS Composite_Key,
+    s.BrandID AS BrandID,
+    s.BrandName AS BrandName,
+    s.CategoryGroupID AS CategoryGroupID,
+    s.CategoryID AS CategoryID,
+    s.CategoryName AS CategoryName,
+    s.ChannelType AS ChannelType,
+    s.ChannelGroupID AS ChannelGroupID,
+    s.Description AS Description,
+    s.SocialID AS SocialID,
+    s.CreatedDate AS CreatedDate,
+    s.SentimentType AS SentimentType,
+    s.PassivePositiveSentimentCount AS PassivePositiveSentimentCount,
+    s.NegativeSentimentCount AS NegativeSentimentCount,
+    s.NeutralSentimentCount AS NeutralSentimentCount,
+    s.Tagid AS Tagid,
+    s.UpperCategoryID AS UpperCategoryID,
+    s.IsDeleted AS IsDeleted,
+    s.SimplifiedText AS SimplifiedText,
+    s.Rating AS Rating,
+    s.IsVerified AS IsVerified,
+    s.RetweetedStatusID AS RetweetedStatusID,
+    s.InReplyToStatusId AS InReplyToStatusId,
+    s.MediaType AS MediaType,
+    COALESCE(a.NumLikesCount, s.NumLikesCount) AS NumLikesCount,
+    COALESCE(a.NumComments, s.NumComments) AS NumComments,
+    COALESCE(a.NumShareCount, s.NumShareCount) AS NumShareCount,
+    COALESCE(a.NumVideoViews, s.NumVideoViews) AS NumVideoViews,
+    a.Reach AS Reach,
+    COALESCE(a.Impression, s.Impression) AS Impression,
+    COALESCE(a.Engagement, s.Engagement) AS Engagement,
+    s.CategoryXML AS CategoryXML,
+    s.MediaEnum AS MediaEnum,
+    s.Lang AS Language,
+    s.LanguageName AS Language_Name,
+    s.PostType AS PostType,
+    s.IsBrandPost AS IsBrandPost,
+    s.InstagramPostType AS InstagramPostType,
+    s.SettingID AS SettingID,
+    s.quotedTweetCounts AS quotedTweetCounts,
+    s.InfluencerCategory AS InfluencerCategory,
+    s.TypeofComment AS TypeofComment,
+    s.OrderID AS OrderID,
+    s.IsHistoric AS IsHistoric,
+    s.MentionMD5 AS MentionMD5,
+    s.Content AS Content,
+    s.NRESentimentScore AS NRESentimentScore,
+    s.InsertedDate AS InsertedDate,
+    s.AuthorSocialID AS AuthorSocialID,
+    s.AuthorName AS AuthorName,
+    s.UserInfoScreenName AS UserInfoScreenName,
+    s.Bio AS Bio,
+    s.FollowersCount AS FollowersCount,
+    s.FollowingCount AS FollowingCount,
+    s.TweetCount AS TweetCount,
+    s.UserInfoIsVerified AS UserInfoIsVerified,
+    s.PicUrl AS PicUrl,
+    s.AttachmentXML AS AttachmentXML
+FROM ALERT_FINAL_DATA_STREAM2 s
+LEFT JOIN aggregated_table2 a
+    ON s.Composite_Key = a.Composite_Key
+EMIT CHANGES;
+"""
+
 aggregated_table = """
-CREATE TABLE aggregated_table2 WITH (KEY_FORMAT='KAFKA') AS 
+CREATE TABLE aggregated_table2 WITH (KEY_FORMAT='KAFKA',  TIMESTAMP='CreatedDate',TIMESTAMP_FORMAT='yyyy-MM-dd''T''HH:mm:ss') AS 
 SELECT 
     Composite_Key PRIMARY KEY,
     LATEST_BY_OFFSET(NumComments) AS NumComments,
@@ -375,15 +446,31 @@ SELECT
     LATEST_BY_OFFSET(Impression) AS Impression,
     LATEST_BY_OFFSET(Engagement) AS Engagement  
 FROM 
-    ALERT_UPDATED_DATA_STREAM2
+    ALERT_UPDATED_DATA_STREAM
 GROUP BY 
     Composite_Key;
+"""
+
+aggregated_2 = """
+CREATE TABLE AGGREGATED_TABLE2 WITH  (KEY_FORMAT='KAFKA',  TIMESTAMP='CreatedDate',TIMESTAMP_FORMAT='yyyy-MM-dd''T''HH:mm:ss') AS SELECT
+  ALERT_UPDATED_DATA_STREAM.COMPOSITE_KEY COMPOSITE_KEY,
+  LATEST_BY_OFFSET(ALERT_UPDATED_DATA_STREAM.NUMCOMMENTS) NUMCOMMENTS,
+  LATEST_BY_OFFSET(ALERT_UPDATED_DATA_STREAM.NUMLIKESCOUNT) NUMLIKESCOUNT,
+  LATEST_BY_OFFSET(ALERT_UPDATED_DATA_STREAM.NUMSHARECOUNT) NUMSHARECOUNT,
+  LATEST_BY_OFFSET(ALERT_UPDATED_DATA_STREAM.NUMVIDEOVIEWS) NUMVIDEOVIEWS,
+  LATEST_BY_OFFSET(ALERT_UPDATED_DATA_STREAM.REACH) REACH,
+  LATEST_BY_OFFSET(ALERT_UPDATED_DATA_STREAM.IMPRESSION) IMPRESSION,
+  LATEST_BY_OFFSET(ALERT_UPDATED_DATA_STREAM.ENGAGEMENT) ENGAGEMENT,
+  LATEST_BY_OFFSET(ALERT_UPDATED_DATA_STREAM.CREATEDDATE) CREATEDDATE
+FROM ALERT_UPDATED_DATA_STREAM ALERT_UPDATED_DATA_STREAM
+GROUP BY ALERT_UPDATED_DATA_STREAM.COMPOSITE_KEY
+EMIT CHANGES;
 """
 if __name__ == "__main__":
     # Create the final_data_stream streamALERT_FINAL_DATA_STREAM
     # execute_ksqldb_query(create_final_data_stream_query)
     # execute_ksqldb_query(create_update_data_stream_query)
-    # execute_ksqldb_query(aggregated_table)
+    # execute_ksqldb_query(aggregated_2)
 
     execute_ksqldb_query(joined_filterd_stream)
 # CLEANUP_POLICY='delete', KAFKA_TOPIC='LATEST_ALERT_STREAM', PARTITIONS=10, REPLICAS=1, RETENTION_MS=604800000) AS

@@ -12,7 +12,7 @@ conf = {
 producer = Producer(conf)
 
 # JSON data to be sent
-comp_key = "229_22_8c1a6436-065b-4714-bcb8-fb03d49ba4bf_518310aa-2bc2-451e-932c-c1ce90508e8f_e73934b99a1ad00368906fb1bab9657a_2024-08-09T16:50:22"
+comp_key = "354_35_f53f6af3-65a9-4286-8dac-4a8e5d6c6b3a_ce139b4c-a63f-416b-bc4c-f7d1518d01d2_938de5bb2ce76b73aff8c44aac56807d_2024-08-09T12:17:30"
 cat_id, b_id, s_id, t_id, m_md5, c_date = comp_key.split("_")
 data = {
     "COMPOSITE_KEY": comp_key,
