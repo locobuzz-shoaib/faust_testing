@@ -13,8 +13,8 @@ producer = Producer(conf)
 
 # JSON data to be sent
 data = {
-    "BrandID": 905,
-    "CategoryID": 47,
+    "BrandID": 954,
+    "CategoryID": 96,
     "SocialID": "28d40f80-a0ad-4971-9323-cb1926e6effc",
     "NumComments": 60,
     "NumLikesCount": 10051,

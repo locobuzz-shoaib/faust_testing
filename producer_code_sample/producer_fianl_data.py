@@ -100,7 +100,10 @@ def send_alert_data_to_kafka(topic, start_date, num_messages=10):
         key_data = json.dumps({
             "BrandID": data["BrandID"],
             "CategoryID": data["CategoryID"],
-            "SocialID": data["SocialID"]
+            "SocialID": data["SocialID"],
+            "CreatedDate": data["CreatedDate"],
+            "Tagid": data["Tagid"],
+            "MentionMD5": data["MentionMD5"]
         })
         producer.produce(topic, key=key_data, value=json.dumps(data))
         producer.poll(1)

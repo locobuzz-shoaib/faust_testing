@@ -6,15 +6,15 @@ KSQLDB_SERVER_URL = "http://192.168.0.102:8088"
 # ksqlDB query to create the final_data_stream stream with composite keys
 create_final_data_stream_query = """
 CREATE OR REPLACE STREAM ALERT_FINAL_DATA_STREAM (
-    BrandID INT,
+    BrandID INT key,
     BrandName STRING,
     CategoryGroupID INT,
-    CategoryID INT,
+    CategoryID INT key,
     CategoryName STRING,
     ChannelType INT,
     ChannelGroupID INT,
     Description STRING,
-    SocialID STRING,
+    SocialID STRING key,
     NumLikesORFollowers STRING,
     NumLikesCount INT,
     NumComments INT,
@@ -22,12 +22,12 @@ CREATE OR REPLACE STREAM ALERT_FINAL_DATA_STREAM (
     NumShareCount INT,
     NumVideoViews INT,
     ShareCount INT,
-    CreatedDate STRING,
+    CreatedDate STRING key,
     SentimentType INT,
     PassivePositiveSentimentCount INT,
     NegativeSentimentCount INT,
     NeutralSentimentCount INT,
-    Tagid STRING,
+    Tagid STRING key,
     UpperCategoryID INT,
     IsDeleted BOOLEAN,
     SimplifiedText STRING,
@@ -52,7 +52,7 @@ CREATE OR REPLACE STREAM ALERT_FINAL_DATA_STREAM (
     TypeofComment INT,
     OrderID INT,
     IsHistoric BOOLEAN,
-    MentionMD5 STRING,
+    MentionMD5 STRING key,
     Content STRING,
     NRESentimentScore DOUBLE,
     InsertedDate STRING,
@@ -67,10 +67,11 @@ CREATE OR REPLACE STREAM ALERT_FINAL_DATA_STREAM (
     PicUrl STRING,
     AttachmentXML STRING
 ) WITH (
-   KAFKA_TOPIC='finaldata',
-  VALUE_FORMAT='JSON',
-  TIMESTAMP='CreatedDate',
-  TIMESTAMP_FORMAT='yyyy-MM-dd''T''HH:mm:ss'
+        KAFKA_TOPIC='finaldata',
+        VALUE_FORMAT='JSON',
+        TIMESTAMP='CreatedDate',
+        KEY_FORMAT='JSON',
+        TIMESTAMP_FORMAT='yyyy-MM-dd''T''HH:mm:ss'
 );
 """
 
@@ -92,12 +93,12 @@ CREATE OR REPLACE STREAM ALERT_UPDATED_DATA_STREAM (
     NumShareCount INT,
     NumVideoViews INT,
     ShareCount INT,
-    CreatedDate STRING,
+    CreatedDate STRING key,
     SentimentType INT,
     PassivePositiveSentimentCount INT,
     NegativeSentimentCount INT,
     NeutralSentimentCount INT,
-    Tagid STRING,
+    Tagid STRING key,
     UpperCategoryID INT,
     IsDeleted BOOLEAN,
     SimplifiedText STRING,
@@ -122,7 +123,7 @@ CREATE OR REPLACE STREAM ALERT_UPDATED_DATA_STREAM (
     TypeofComment INT,
     OrderID INT,
     IsHistoric BOOLEAN,
-    MentionMD5 STRING,
+    MentionMD5 STRING key,
     Content STRING,
     NRESentimentScore DOUBLE,
     InsertedDate STRING,
