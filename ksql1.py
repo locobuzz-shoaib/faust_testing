@@ -5,17 +5,17 @@ KSQLDB_SERVER_URL = "http://192.168.0.102:8088"
 
 # ksqlDB query to create the final_data_stream stream with composite keys
 create_final_data_stream_query = """
-CREATE OR REPLACE STREAM ALERT_FINAL_DATA_STREAM (
+CREATE OR REPLACE STREAM ALERT_FINAL_DATA_STREAM2 (
     Composite_Key STRING key,
-    BrandID INT Key,
+    BrandID INT,
     BrandName STRING,
     CategoryGroupID INT,
-    CategoryID INT key,
+    CategoryID INT,
     CategoryName STRING,
     ChannelType INT,
     ChannelGroupID INT,
     Description STRING,
-    SocialID STRING key,
+    SocialID STRING,
     NumLikesORFollowers STRING,
     NumLikesCount INT,
     NumComments INT,
@@ -23,12 +23,12 @@ CREATE OR REPLACE STREAM ALERT_FINAL_DATA_STREAM (
     NumShareCount INT,
     NumVideoViews INT,
     ShareCount INT,
-    CreatedDate STRING key,
+    CreatedDate STRING,
     SentimentType INT,
     PassivePositiveSentimentCount INT,
     NegativeSentimentCount INT,
     NeutralSentimentCount INT,
-    Tagid STRING key,
+    Tagid STRING,
     UpperCategoryID INT,
     IsDeleted BOOLEAN,
     SimplifiedText STRING,
@@ -53,7 +53,7 @@ CREATE OR REPLACE STREAM ALERT_FINAL_DATA_STREAM (
     TypeofComment INT,
     OrderID INT,
     IsHistoric BOOLEAN,
-    MentionMD5 STRING key,
+    MentionMD5 STRING,
     Content STRING,
     NRESentimentScore DOUBLE,
     InsertedDate STRING,
@@ -71,7 +71,7 @@ CREATE OR REPLACE STREAM ALERT_FINAL_DATA_STREAM (
         KAFKA_TOPIC='finaldata',
         VALUE_FORMAT='JSON',
         TIMESTAMP='CreatedDate',
-        KEY_FORMAT='JSON',
+        KEY_FORMAT='KAFKA',
         TIMESTAMP_FORMAT='yyyy-MM-dd''T''HH:mm:ss'
 );
 """
@@ -278,6 +278,8 @@ WHERE
     NumCommentsCount >= 2000
 EMIT CHANGES;
 """
+
+
 # Invalid value NO_WINDOW for property WINDOW_TYPE: String must be one of: SESSION, HOPPING, TUMBLING, null",
 # Function to execute ksqlDB query
 def execute_ksqldb_query(query):
@@ -293,74 +295,76 @@ def execute_ksqldb_query(query):
 
 
 joined_filterd_stream = """
-CREATE STREAM joined_filtered_posts2 AS
+CREATE TABLE koined_posts7 WITH (KEY_FORMAT='KAFKA',  TIMESTAMP='CreatedDate',TIMESTAMP_FORMAT='yyyy-MM-dd''T''HH:mm:ss') AS 
 SELECT 
     s.Composite_Key AS Composite_Key,
-    s.BrandID AS BrandID,
-    s.BrandName AS BrandName,
-    s.CategoryGroupID AS CategoryGroupID,
-    s.CategoryID AS CategoryID,
-    s.CategoryName AS CategoryName,
-    s.ChannelType AS ChannelType,
-    s.ChannelGroupID AS ChannelGroupID,
-    s.Description AS Description,
-    s.SocialID AS SocialID,
-    s.CreatedDate AS CreatedDate,
-    s.SentimentType AS SentimentType,
-    s.PassivePositiveSentimentCount AS PassivePositiveSentimentCount,
-    s.NegativeSentimentCount AS NegativeSentimentCount,
-    s.NeutralSentimentCount AS NeutralSentimentCount,
-    s.Tagid AS Tagid,
-    s.UpperCategoryID AS UpperCategoryID,
-    s.IsDeleted AS IsDeleted,
-    s.SimplifiedText AS SimplifiedText,
-    s.Rating AS Rating,
-    s.IsVerified AS IsVerified,
-    s.RetweetedStatusID AS RetweetedStatusID,
-    s.InReplyToStatusId AS InReplyToStatusId,
-    s.MediaType AS MediaType,
-    COALESCE(a.NumLikesCount, s.NumLikesCount) AS NumLikesCount,
-    COALESCE(a.NumComments, s.NumComments) AS NumComments,
-    COALESCE(a.NumShareCount, s.NumShareCount) AS NumShareCount,
-    COALESCE(a.NumVideoViews, s.NumVideoViews) AS NumVideoViews,
-    COALESCE(a.Reach, s.Reach) AS Reach,
-    COALESCE(a.Impression, s.Impression) AS Impression,
-    COALESCE(a.Engagement, s.Engagement) AS Engagement,
-    s.CategoryXML AS CategoryXML,
-    s.MediaEnum AS MediaEnum,
-    s.Lang AS Language,
-    s.LanguageName AS Language_Name,
-    s.PostType AS PostType,
-    s.IsBrandPost AS IsBrandPost,
-    s.InstagramPostType AS InstagramPostType,
-    s.SettingID AS SettingID,
-    s.quotedTweetCounts AS quotedTweetCounts,
-    s.InfluencerCategory AS InfluencerCategory,
-    s.TypeofComment AS TypeofComment,
-    s.OrderID AS OrderID,
-    s.IsHistoric AS IsHistoric,
-    s.MentionMD5 AS MentionMD5,
-    s.Content AS Content,
-    s.NRESentimentScore AS NRESentimentScore,
-    s.InsertedDate AS InsertedDate,
-    s.AuthorSocialID AS AuthorSocialID,
-    s.AuthorName AS AuthorName,
-    s.UserInfoScreenName AS UserInfoScreenName,
-    s.Bio AS Bio,
-    s.FollowersCount AS FollowersCount,
-    s.FollowingCount  AS FollowingCount ,
-    s.TweetCount AS TweetCount,
-    s.UserInfoIsVerified AS UserInfoIsVerified,
-    s.PicUrl AS PicUrl,
-    s.AttachmentXML AS AttachmentXML
-FROM ALERT_FINAL_DATA_STREAM s
+    LATEST_BY_OFFSET(s.BrandID) AS BrandID,
+    LATEST_BY_OFFSET(s.BrandName) AS BrandName,
+    LATEST_BY_OFFSET(s.CategoryGroupID) AS CategoryGroupID,
+    LATEST_BY_OFFSET(s.CategoryID) AS CategoryID,
+    LATEST_BY_OFFSET(s.CategoryName) AS CategoryName,
+    LATEST_BY_OFFSET(s.ChannelType) AS ChannelType,
+    LATEST_BY_OFFSET(s.ChannelGroupID) AS ChannelGroupID,
+    LATEST_BY_OFFSET(s.Description) AS Description,
+    LATEST_BY_OFFSET(s.SocialID) AS SocialID,
+    LATEST_BY_OFFSET(s.CreatedDate) AS CreatedDate,
+    LATEST_BY_OFFSET(s.SentimentType) AS SentimentType,
+    LATEST_BY_OFFSET(s.PassivePositiveSentimentCount) AS PassivePositiveSentimentCount,
+    LATEST_BY_OFFSET(s.NegativeSentimentCount) AS NegativeSentimentCount,
+    LATEST_BY_OFFSET(s.NeutralSentimentCount) AS NeutralSentimentCount,
+    LATEST_BY_OFFSET(s.Tagid) AS Tagid,
+    LATEST_BY_OFFSET(s.UpperCategoryID) AS UpperCategoryID,
+    LATEST_BY_OFFSET(s.IsDeleted) AS IsDeleted,
+    LATEST_BY_OFFSET(s.SimplifiedText) AS SimplifiedText,
+    LATEST_BY_OFFSET(s.Rating) AS Rating,
+    LATEST_BY_OFFSET(s.IsVerified) AS IsVerified,
+    LATEST_BY_OFFSET(s.RetweetedStatusID) AS RetweetedStatusID,
+    LATEST_BY_OFFSET(s.InReplyToStatusId) AS InReplyToStatusId,
+    LATEST_BY_OFFSET(s.MediaType) AS MediaType,
+    COALESCE(LATEST_BY_OFFSET(a.NumLikesCount), LATEST_BY_OFFSET(s.NumLikesCount)) AS NumLikesCount,
+    COALESCE(LATEST_BY_OFFSET(a.NumComments), LATEST_BY_OFFSET(s.NumComments)) AS NumComments,
+    COALESCE(LATEST_BY_OFFSET(a.NumShareCount), LATEST_BY_OFFSET(s.NumShareCount)) AS NumShareCount,
+    COALESCE(LATEST_BY_OFFSET(a.NumVideoViews), LATEST_BY_OFFSET(s.NumVideoViews)) AS NumVideoViews,
+    LATEST_BY_OFFSET(a.Reach) AS Reach,
+    COALESCE(LATEST_BY_OFFSET(a.Impression), LATEST_BY_OFFSET(s.Impression)) AS Impression,
+    COALESCE(LATEST_BY_OFFSET(a.Engagement), LATEST_BY_OFFSET(s.Engagement)) AS Engagement,
+    LATEST_BY_OFFSET(s.CategoryXML) AS CategoryXML,
+    LATEST_BY_OFFSET(s.MediaEnum) AS MediaEnum,
+    LATEST_BY_OFFSET(s.Lang) AS Language,
+    LATEST_BY_OFFSET(s.LanguageName) AS Language_Name,
+    LATEST_BY_OFFSET(s.PostType) AS PostType,
+    LATEST_BY_OFFSET(s.IsBrandPost) AS IsBrandPost,
+    LATEST_BY_OFFSET(s.InstagramPostType) AS InstagramPostType,
+    LATEST_BY_OFFSET(s.SettingID) AS SettingID,
+    LATEST_BY_OFFSET(s.quotedTweetCounts) AS quotedTweetCounts,
+    LATEST_BY_OFFSET(s.InfluencerCategory) AS InfluencerCategory,
+    LATEST_BY_OFFSET(s.TypeofComment) AS TypeofComment,
+    LATEST_BY_OFFSET(s.OrderID) AS OrderID,
+    LATEST_BY_OFFSET(s.IsHistoric) AS IsHistoric,
+    LATEST_BY_OFFSET(s.MentionMD5) AS MentionMD5,
+    LATEST_BY_OFFSET(s.Content) AS Content,
+    LATEST_BY_OFFSET(s.NRESentimentScore) AS NRESentimentScore,
+    LATEST_BY_OFFSET(s.InsertedDate) AS InsertedDate,
+    LATEST_BY_OFFSET(s.AuthorSocialID) AS AuthorSocialID,
+    LATEST_BY_OFFSET(s.AuthorName) AS AuthorName,
+    LATEST_BY_OFFSET(s.UserInfoScreenName) AS UserInfoScreenName,
+    LATEST_BY_OFFSET(s.Bio) AS Bio,
+    LATEST_BY_OFFSET(s.FollowersCount) AS FollowersCount,
+    LATEST_BY_OFFSET(s.FollowingCount) AS FollowingCount,
+    LATEST_BY_OFFSET(s.TweetCount) AS TweetCount,
+    LATEST_BY_OFFSET(s.UserInfoIsVerified) AS UserInfoIsVerified,
+    LATEST_BY_OFFSET(s.PicUrl) AS PicUrl,
+    LATEST_BY_OFFSET(s.AttachmentXML) AS AttachmentXML
+FROM ALERT_FINAL_DATA_STREAM2 s
 LEFT JOIN aggregated_table a
     ON s.Composite_Key = a.Composite_Key
+    GROUP BY s.Composite_Key
 EMIT CHANGES;
+
 """
 
 aggregated_table = """
-CREATE TABLE aggregated_table WITH (KEY_FORMAT='KAFKA') AS 
+CREATE TABLE aggregated_table2 WITH (KEY_FORMAT='KAFKA') AS 
 SELECT 
     Composite_Key PRIMARY KEY,
     LATEST_BY_OFFSET(NumComments) AS NumComments,
@@ -371,7 +375,7 @@ SELECT
     LATEST_BY_OFFSET(Impression) AS Impression,
     LATEST_BY_OFFSET(Engagement) AS Engagement  
 FROM 
-    ALERT_UPDATED_DATA_STREAM 
+    ALERT_UPDATED_DATA_STREAM2
 GROUP BY 
     Composite_Key;
 """

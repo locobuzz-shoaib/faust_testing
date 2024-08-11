@@ -12,21 +12,21 @@ conf = {
 producer = Producer(conf)
 
 # JSON data to be sent
+comp_key = "229_22_8c1a6436-065b-4714-bcb8-fb03d49ba4bf_518310aa-2bc2-451e-932c-c1ce90508e8f_e73934b99a1ad00368906fb1bab9657a_2024-08-09T16:50:22"
+cat_id, b_id, s_id, t_id, m_md5, c_date = comp_key.split("_")
 data = {
-    "COMPOSITE_KEY": "587_73_0be18847-353d-4dbb-8245-9cc837eb511b_3c7de4d6-80f7-4ca7-ae3b-57e55182acc8_c6b3d4ce9d750cbb91fdd84241858cf6_2024-08-09T03:59:04",
-    "BrandID": 587,
-    "CategoryID": 73,
-    "SocialID": "0be18847-353d-4dbb-8245-9cc837eb511b",
-    "Tagid": "3c7de4d6-80f7-4ca7-ae3b-57e55182acc8",
-    "MentionMD5": "c6b3d4ce9d750cbb91fdd84241858cf6",
-
-    "NUMLIKESCOUNT": 5782,
-
-    "NUMVIDEOVIEWS": 7150,
-    "Reach": 461186,
-    "Impression": 307998,
-    "Engagement": 351864,
-    "CreatedDate": "2024-08-09T03:59:04",
+    "COMPOSITE_KEY": comp_key,
+    "BrandID": int(cat_id),
+    "CategoryID": int(b_id),
+    "SocialID": s_id,
+    "Tagid": t_id,
+    "MentionMD5": m_md5,
+    "NUMLIKESCOUNT": 12226,
+    "NUMVIDEOVIEWS": 20000,
+    "Reach": 20021,
+    "Impression": 20002,
+    "Engagement": 20009,
+    "CreatedDate": c_date,
 }
 
 
