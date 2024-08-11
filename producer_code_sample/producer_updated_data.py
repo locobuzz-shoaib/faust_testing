@@ -106,7 +106,7 @@ def send_alert_data_to_kafka(topic, start_date, num_messages=10):
             "MentionMD5": data["MentionMD5"]
         })
         # data["Composite_Key"] = key_data
-        producer.produce(topic, key=json.dumps(key_data), value=json.dumps(data))
+        producer.produce(topic, key=key_data, value=json.dumps(data))
         producer.poll(1)
         time.sleep(1)
         print(f"Message Produced")

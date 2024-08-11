@@ -97,9 +97,9 @@ def send_alert_data_to_kafka(topic, start_date, num_messages=10):
     for _ in range(num_messages):
         current_time = generate_random_datetime_on_same_day(start_date)
         data = generate_alert_data(current_time)
-        key_data = f"{data['BrandID']}-{data['CategoryID']}-{data['SocialID']}-{data['Tagid']}-{data['MentionMD5']}-{current_time}"
+        key_data = f"{data['BrandID']}_{data['CategoryID']}_{data['SocialID']}_{data['Tagid']}_{data['MentionMD5']}_{current_time}"
         data["Composite_Key"] = key_data
-        producer.produce(topic, key=json.dumps(key_data), value=json.dumps(data))
+        producer.produce(topic, key=key_data, value=json.dumps(data))
         producer.poll(1)
         time.sleep(1)
         print(f"Message Produced")
