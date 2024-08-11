@@ -105,7 +105,6 @@ def send_alert_data_to_kafka(topic, start_date, num_messages=10):
             "Tagid": data["Tagid"],
             "MentionMD5": data["MentionMD5"]
         })
-        key_data = f"{data['BrandID']}-{data['CategoryID']}-{data['SocialID']}-{data['Tagid']}-{data['MentionMD5']}-{current_time}"
         # data["Composite_Key"] = key_data
         producer.produce(topic, key=json.dumps(key_data), value=json.dumps(data))
         producer.poll(1)

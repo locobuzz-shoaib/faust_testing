@@ -358,6 +358,7 @@ CREATE STREAM joined_filtered_posts AS
 
 if __name__ == "__main__":
     # Create the final_data_stream stream
+    execute_ksqldb_query(create_final_data_stream_query)
     execute_ksqldb_query(create_update_data_stream_query)
 # CLEANUP_POLICY='delete', KAFKA_TOPIC='LATEST_ALERT_STREAM', PARTITIONS=10, REPLICAS=1, RETENTION_MS=604800000) AS
 """

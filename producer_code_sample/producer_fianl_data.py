@@ -97,16 +97,8 @@ def send_alert_data_to_kafka(topic, start_date, num_messages=10):
     for _ in range(num_messages):
         current_time = generate_random_datetime_on_same_day(start_date)
         data = generate_alert_data(current_time)
-        key_data = json.dumps({
-            "BrandID": data["BrandID"],
-            "CategoryID": data["CategoryID"],
-            "SocialID": data["SocialID"],
-            "CreatedDate": data["CreatedDate"],
-            "Tagid": data["Tagid"],
-            "MentionMD5": data["MentionMD5"]
-        })
         key_data = f"{data['BrandID']}-{data['CategoryID']}-{data['SocialID']}-{data['Tagid']}-{data['MentionMD5']}-{current_time}"
-        # data["Composite_Key"] = key_data
+        data["Composite_Key"] = key_data
         producer.produce(topic, key=json.dumps(key_data), value=json.dumps(data))
         producer.poll(1)
         time.sleep(1)
@@ -128,5 +120,5 @@ def generate_random_datetime_on_same_day(date):
 if __name__ == "__main__":
     start_date = datetime(2024, 8, 9)
     end_date = datetime(2024, 8, 10)
-    send_alert_data_to_kafka('updateddata', start_date, num_messages=50)
+    send_alert_data_to_kafka('finaldata', start_date, num_messages=50)
     print("Data sent to Kafka topic.")
