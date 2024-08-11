@@ -13,18 +13,20 @@ producer = Producer(conf)
 
 # JSON data to be sent
 data = {
-    "BrandID": 397,
-    "CategoryID": 29,
-    "SocialID": "19452808-6a99-434f-bb20-5e800e901def",
-    "Tagid": "ed15a45a-e12b-4921-b926-b2a217215fd6",
-    "MentionMD5": "7cd946375d1eb853c2c7766b96ec7de2",
+    "COMPOSITE_KEY": "587_73_0be18847-353d-4dbb-8245-9cc837eb511b_3c7de4d6-80f7-4ca7-ae3b-57e55182acc8_c6b3d4ce9d750cbb91fdd84241858cf6_2024-08-09T03:59:04",
+    "BrandID": 587,
+    "CategoryID": 73,
+    "SocialID": "0be18847-353d-4dbb-8245-9cc837eb511b",
+    "Tagid": "3c7de4d6-80f7-4ca7-ae3b-57e55182acc8",
+    "MentionMD5": "c6b3d4ce9d750cbb91fdd84241858cf6",
 
-    "NumShareCount": 1222,
+    "NUMLIKESCOUNT": 5782,
 
-    "Reach": 496506,
-    "Impression": 22717,
-    "Engagement": 219420,
-    "CreatedDate": "2024-08-09T22:51:00",
+    "NUMVIDEOVIEWS": 7150,
+    "Reach": 461186,
+    "Impression": 307998,
+    "Engagement": 351864,
+    "CreatedDate": "2024-08-09T03:59:04",
 }
 
 
@@ -36,7 +38,8 @@ def send_data_to_kafka(topic, data):
         "SocialID": data["SocialID"],
         "Tagid": data["Tagid"],
         "MentionMD5": data["MentionMD5"],
-        "CreatedDate": data["CreatedDate"]
+        "CreatedDate": data["CreatedDate"],
+        "COMPOSITE_KEY": data["COMPOSITE_KEY"]
     })
     producer.produce(topic, key=key_data, value=json.dumps(data))
     producer.poll(1)
