@@ -8,7 +8,7 @@ from faker import Faker
 
 # Kafka configuration
 conf = {
-    'bootstrap.servers': '192.168.0.102:9092',  # Update with your Kafka broker(s)
+    'bootstrap.servers': '192.168.0.178:9092',  # Update with your Kafka broker(s)
     'client.id': 'alert_data_producer'
 }
 
@@ -130,5 +130,5 @@ def generate_random_datetime_on_same_day(date):
 if __name__ == "__main__":
     start_date = datetime(2024, 8, 9)
     end_date = datetime(2024, 8, 10)
-    send_alert_data_to_kafka('finaldata', start_date, num_messages=50)
+    send_alert_data_to_kafka('aggregated_topic', start_date, num_messages=10)
     print("Data sent to Kafka topic.")

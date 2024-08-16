@@ -1,11 +1,11 @@
 import requests
 
 # ksqlDB server URL
-KSQLDB_SERVER_URL = "http://192.168.0.102:8088"
+KSQLDB_SERVER_URL = "http://localhost:8088"
 
 # ksqlDB query to create the final_data_stream stream with composite keys
 create_final_data_stream_query = """
-CREATE OR REPLACE STREAM ALERT_FINAL_DATA_STREAM2 (
+CREATE OR REPLACE STREAM ALERT_FINAL_DATA_STREAM (
     Composite_Key STRING key,
     BrandID INT,
     BrandName STRING,
@@ -68,7 +68,7 @@ CREATE OR REPLACE STREAM ALERT_FINAL_DATA_STREAM2 (
     PicUrl STRING,
     AttachmentXML STRING
 ) WITH (
-        KAFKA_TOPIC='finaldata',
+        KAFKA_TOPIC='AlertFinalData',
         VALUE_FORMAT='JSON',
         TIMESTAMP='CreatedDate',
         KEY_FORMAT='KAFKA',
@@ -466,13 +466,84 @@ FROM ALERT_UPDATED_DATA_STREAM ALERT_UPDATED_DATA_STREAM
 GROUP BY ALERT_UPDATED_DATA_STREAM.COMPOSITE_KEY
 EMIT CHANGES;
 """
+
+creating_aggregated_table = """
+CREATE TABLE FINAL_AGGREGATED_TABLE AS
+SELECT 
+    Composite_Key,
+    LATEST_BY_OFFSET(BrandID) AS BrandID,
+    LATEST_BY_OFFSET(BrandName) AS BrandName,
+    LATEST_BY_OFFSET(CategoryGroupID) AS CategoryGroupID,
+    LATEST_BY_OFFSET(CategoryID) AS CategoryID,
+    LATEST_BY_OFFSET(CategoryName) AS CategoryName,
+    LATEST_BY_OFFSET(ChannelType) AS ChannelType,
+    LATEST_BY_OFFSET(ChannelGroupID) AS ChannelGroupID,
+    LATEST_BY_OFFSET(Description) AS Description,
+    LATEST_BY_OFFSET(SocialID) AS SocialID,
+    LATEST_BY_OFFSET(NumLikesORFollowers) AS NumLikesORFollowers,
+    LATEST_BY_OFFSET(NumLikesCount) AS NumLikesCount,
+    LATEST_BY_OFFSET(NumComments) AS NumComments,
+    LATEST_BY_OFFSET(NumCommentsCount) AS NumCommentsCount,
+    LATEST_BY_OFFSET(NumShareCount) AS NumShareCount,
+    LATEST_BY_OFFSET(NumVideoViews) AS NumVideoViews,
+    LATEST_BY_OFFSET(ShareCount) AS ShareCount,
+    LATEST_BY_OFFSET(CreatedDate) AS CreatedDate,
+    LATEST_BY_OFFSET(SentimentType) AS SentimentType,
+    LATEST_BY_OFFSET(PassivePositiveSentimentCount) AS PassivePositiveSentimentCount,
+    LATEST_BY_OFFSET(NegativeSentimentCount) AS NegativeSentimentCount,
+    LATEST_BY_OFFSET(NeutralSentimentCount) AS NeutralSentimentCount,
+    LATEST_BY_OFFSET(Tagid) AS Tagid,
+    LATEST_BY_OFFSET(UpperCategoryID) AS UpperCategoryID,
+    LATEST_BY_OFFSET(IsDeleted) AS IsDeleted,
+    LATEST_BY_OFFSET(SimplifiedText) AS SimplifiedText,
+    LATEST_BY_OFFSET(Rating) AS Rating,
+    LATEST_BY_OFFSET(IsVerified) AS IsVerified,
+    LATEST_BY_OFFSET(RetweetedStatusID) AS RetweetedStatusID,
+    LATEST_BY_OFFSET(InReplyToStatusId) AS InReplyToStatusId,
+    LATEST_BY_OFFSET(MediaType) AS MediaType,
+    LATEST_BY_OFFSET(Reach) AS Reach,
+    LATEST_BY_OFFSET(Impression) AS Impression,
+    LATEST_BY_OFFSET(Engagement) AS Engagement,
+    LATEST_BY_OFFSET(CategoryXML) AS CategoryXML,
+    LATEST_BY_OFFSET(MediaEnum) AS MediaEnum,
+    LATEST_BY_OFFSET(Lang) AS Lang,
+    LATEST_BY_OFFSET(LanguageName) AS LanguageName,
+    LATEST_BY_OFFSET(PostType) AS PostType,
+    LATEST_BY_OFFSET(IsBrandPost) AS IsBrandPost,
+    LATEST_BY_OFFSET(InstagramPostType) AS InstagramPostType,
+    LATEST_BY_OFFSET(SettingID) AS SettingID,
+    LATEST_BY_OFFSET(quotedTweetCounts) AS quotedTweetCounts,
+    LATEST_BY_OFFSET(InfluencerCategory) AS InfluencerCategory,
+    LATEST_BY_OFFSET(TypeofComment) AS TypeofComment,
+    LATEST_BY_OFFSET(OrderID) AS OrderID,
+    LATEST_BY_OFFSET(IsHistoric) AS IsHistoric,
+    LATEST_BY_OFFSET(MentionMD5) AS MentionMD5,
+    LATEST_BY_OFFSET(Content) AS Content,
+    LATEST_BY_OFFSET(NRESentimentScore) AS NRESentimentScore,
+    LATEST_BY_OFFSET(InsertedDate) AS InsertedDate,
+    LATEST_BY_OFFSET(AuthorSocialID) AS AuthorSocialID,
+    LATEST_BY_OFFSET(AuthorName) AS AuthorName,
+    LATEST_BY_OFFSET(UserInfoScreenName) AS UserInfoScreenName,
+    LATEST_BY_OFFSET(Bio) AS Bio,
+    LATEST_BY_OFFSET(FollowersCount) AS FollowersCount,
+    LATEST_BY_OFFSET(FollowingCount) AS FollowingCount,
+    LATEST_BY_OFFSET(TweetCount) AS TweetCount,
+    LATEST_BY_OFFSET(UserInfoIsVerified) AS UserInfoIsVerified,
+    LATEST_BY_OFFSET(PicUrl) AS PicUrl,
+    LATEST_BY_OFFSET(AttachmentXML) AS AttachmentXML
+FROM ALERT_FINAL_DATA_STREAM
+GROUP BY Composite_Key;
+
+"""
+
+
 if __name__ == "__main__":
     # Create the final_data_stream streamALERT_FINAL_DATA_STREAM
-    # execute_ksqldb_query(create_final_data_stream_query)
+    execute_ksqldb_query(create_final_data_stream_query)
     # execute_ksqldb_query(create_update_data_stream_query)
     # execute_ksqldb_query(aggregated_2)
 
-    execute_ksqldb_query(joined_filterd_stream)
+    execute_ksqldb_query(creating_aggregated_table)
 # CLEANUP_POLICY='delete', KAFKA_TOPIC='LATEST_ALERT_STREAM', PARTITIONS=10, REPLICAS=1, RETENTION_MS=604800000) AS
 """
 [{'@type': 'currentStatus', 'statementText': "CREATE OR REPLACE STREAM JOINED_ALERT_STREAM WITH (CLEANUP_POLICY='delete', KAFKA_TOPIC='JOINED_ALERT_STREAM', PARTITIONS=10, REPLICAS=1, RETENTION_MS=604800000) AS SELECT\n  A.BRANDID BRANDID,\n  A.BRANDNAME BRANDNAME,\n  A.CATEGORYGROUPID CATEGORYGROUPID,\n  A.CATEGORYID CATEGORYID,\n  A.CATEGORYNAME CATEGORYNAME,\n  A.CHANNELTYPE CHANNELTYPE,\n  A.CHANNELGROUPID CHANNELGROUPID,\n  A.DESCRIPTION DESCRIPTION,\n  A.SOCIALID A_SOCIALID,\n  A.NUMLIKESORFOLLOWERS NUMLIKESORFOLLOWERS,\n  COALESCE(U.NUMLIKESCOUNT, A.NUMLIKESCOUNT) NUMLIKESCOUNT,\n  COALESCE(U.NUMCOMMENTS, A.NUMCOMMENTS) NUMCOMMENTS,\n  COALESCE(U.NUMCOMMENTSCOUNT, A.NUMCOMMENTSCOUNT) NUMCOMMENTSCOUNT,\n  COALESCE(U.NUMSHARECOUNT, A.NUMSHARECOUNT) NUMSHARECOUNT,\n  COALESCE(U.NUMVIDEOVIEWS, A.NUMVIDEOVIEWS) NUMVIDEOVIEWS,\n  A.SHARECOUNT SHARECOUNT,\n  A.CREATEDDATE A_CREATEDDATE,\n  A.SENTIMENTTYPE SENTIMENTTYPE,\n  A.PASSIVEPOSITIVESENTIMENTCOUNT PASSIVEPOSITIVESENTIMENTCOUNT,\n  A.NEGATIVESENTIMENTCOUNT NEGATIVESENTIMENTCOUNT,\n  A.NEUTRALSENTIMENTCOUNT NEUTRALSENTIMENTCOUNT,\n  A.TAGID TAGID,\n  A.UPPERCATEGORYID UPPERCATEGORYID,\n  A.ISDELETED ISDELETED,\n  A.SIMPLIFIEDTEXT SIMPLIFIEDTEXT,\n  A.RATING RATING,\n  A.ISVERIFIED ISVERIFIED,\n  A.RETWEETEDSTATUSID RETWEETEDSTATUSID,\n  A.INREPLYTOSTATUSID INREPLYTOSTATUSID,\n  A.MEDIATYPE MEDIATYPE,\n  A.REACH REACH,\n  A.IMPRESSION IMPRESSION,\n  A.ENGAGEMENT ENGAGEMENT,\n  A.CATEGORYXML CATEGORYXML,\n  A.MEDIAENUM MEDIAENUM,\n  A.LANG LANG,\n  A.LANGUAGENAME LANGUAGENAME,\n  A.POSTTYPE POSTTYPE,\n  A.ISBRANDPOST ISBRANDPOST,\n  A.INSTAGRAMPOSTTYPE INSTAGRAMPOSTTYPE,\n  A.SETTINGID SETTINGID,\n  A.QUOTEDTWEETCOUNTS QUOTEDTWEETCOUNTS,\n  A.INFLUENCERCATEGORY INFLUENCERCATEGORY,\n  A.TYPEOFCOMMENT TYPEOFCOMMENT,\n  A.ORDERID ORDERID,\n  A.ISHISTORIC ISHISTORIC,\n  A.MENTIONMD5 MENTIONMD5,\n  A.CONTENT CONTENT,\n  A.NRESENTIMENTSCORE NRESENTIMENTSCORE,\n  A.INSERTEDDATE INSERTEDDATE,\n  A.AUTHORSOCIALID AUTHORSOCIALID,\n  A.AUTHORNAME AUTHORNAME,\n  A.USERINFOSCREENNAME USERINFOSCREENNAME,\n  A.BIO BIO,\n  A.FOLLOWERSCOUNT FOLLOWERSCOUNT,\n  A.FOLLOWINGCOUNT FOLLOWINGCOUNT,\n  A.TWEETCOUNT TWEETCOUNT,\n  A.USERINFOISVERIFIED USERINFOISVERIFIED,\n  A.PICURL PICURL,\n  A.ATTACHMENTXML ATTACHMENTXML\nFROM ALERT_FINAL_DATA_STREAM A\nLEFT OUTER JOIN ALERT_UPDATED_DATA_STREAM U WITHIN 72 HOURS ON ((A.SOCIALID = U.SOCIALID))\nWHERE (A.CREATEDDATE = U.CREATEDDATE)\nEMIT CHANGES;", 'commandId': 'stream/`JOINED_ALERT_STREAM`/create', 'commandStatus': {'status': 'SUCCESS', 'message': 'Created query with ID CSAS_JOINED_ALERT_STREAM_19', 'queryId': 'CSAS_JOINED_ALERT_STREAM_19'}, 'commandSequenceNumber': 20, 'warnings': [{'message': 'DEPRECATION NOTICE: Stream-stream joins statements without a GRACE PERIOD will not be accepted in a future ksqlDB version.\nPlease use the GRACE PERIOD clause as specified in https://docs.ksqldb.io/en/latest/developer-guide/ksqldb-reference/select-push-query/'}]}]
