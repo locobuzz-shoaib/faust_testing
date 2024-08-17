@@ -12,7 +12,7 @@ conf = {
 producer = Producer(conf)
 
 # JSON data to be sent
-comp_key = "945_72_256e15cc-43a7-4087-8ccb-1368e0549440_dd56a730-9b13-43ea-902d-9d0cc479f95f_391d93fa765212f05050457907ca4a7f_2024-08-09T11:23:05"
+comp_key = "17612_1808_f434f341-34ce-44d9-b3c6-4a0311ccea02_7af17e95-37db-4a32-9bc9-f7756b0fb0e4_e587408ff3eaa704fd9f3bc7f7c87e17_2024-08-18T12:37:49"
 cat_id, b_id, s_id, t_id, m_md5, c_date = comp_key.split("_")
 data = {
     "CompositeKey": comp_key,
@@ -21,8 +21,9 @@ data = {
     "SocialID": s_id,
     "Tagid": t_id,
     "MentionMD5": m_md5,
-    "NUMLIKESCOUNT": 12121,
+    "NUMLIKESCOUNT": 20012,
     "NUMVIDEOVIEWS": 20000,
+    "NumCommentsCount": 10021,
     "Reach": 20021,
     "Impression": 20002,
     "Engagement": 20009,
