@@ -1,79 +1,103 @@
 import requests
 
+# KSQLDB_SERVER_URL = "http://a96f0aef8e7624f22a07fc3fc3ad88f2-1060712106.ap-south-1.elb.amazonaws.com"
 # ksqlDB server URL
-KSQLDB_SERVER_URL = "http://localhost:8088"
+KSQLDB_SERVER_URL = "http://192.168.0.107:8088"
 
 # ksqlDB query to create the final_data_stream stream with composite keys
 create_final_data_stream_query = """
-CREATE OR REPLACE STREAM ALERT_FINAL_DATA_STREAM (
-    Composite_Key STRING key,
-    BrandID INT,
-    BrandName STRING,
-    CategoryGroupID INT,
-    CategoryID INT,
-    CategoryName STRING,
-    ChannelType INT,
-    ChannelGroupID INT,
-    Description STRING,
-    SocialID STRING,
-    NumLikesORFollowers STRING,
-    NumLikesCount INT,
-    NumComments INT,
-    NumCommentsCount INT,
-    NumShareCount INT,
-    NumVideoViews INT,
-    ShareCount INT,
-    CreatedDate STRING,
-    SentimentType INT,
-    PassivePositiveSentimentCount INT,
-    NegativeSentimentCount INT,
-    NeutralSentimentCount INT,
-    Tagid STRING,
-    UpperCategoryID INT,
-    IsDeleted BOOLEAN,
-    SimplifiedText STRING,
-    Rating DOUBLE,
-    IsVerified BOOLEAN,
-    RetweetedStatusID BIGINT,
-    InReplyToStatusId BIGINT,
-    MediaType STRING,
-    Reach INT,
-    Impression INT,
-    Engagement INT,
-    CategoryXML STRING,
-    MediaEnum INT,
-    Lang STRING,
-    LanguageName STRING,
-    PostType INT,
-    IsBrandPost BOOLEAN,
-    InstagramPostType INT,
-    SettingID INT,
-    quotedTweetCounts INT,
-    InfluencerCategory ARRAY<STRING>,
-    TypeofComment INT,
-    OrderID INT,
-    IsHistoric BOOLEAN,
-    MentionMD5 STRING,
-    Content STRING,
-    NRESentimentScore DOUBLE,
-    InsertedDate STRING,
-    AuthorSocialID STRING,
-    AuthorName STRING,
-    UserInfoScreenName STRING,
-    Bio STRING,
-    FollowersCount INT,
-    FollowingCount INT,
-    TweetCount INT,
-    UserInfoIsVerified BOOLEAN,
-    PicUrl STRING,
-    AttachmentXML STRING
-) WITH (
-        KAFKA_TOPIC='AlertFinalData',
-        VALUE_FORMAT='JSON',
-        TIMESTAMP='CreatedDate',
-        KEY_FORMAT='KAFKA',
-        TIMESTAMP_FORMAT='yyyy-MM-dd''T''HH:mm:ss'
+CREATE STREAM ALERT_FINAL_DATA_STREAM (
+  CompositeKey STRING key,
+  BrandID BIGINT,
+  BrandName STRING,
+  CategoryGroupID BIGINT,
+  CategoryID BIGINT,
+  CategoryName STRING,
+  ChannelType INT,  -- Assuming ChannelType is an integer-based enum
+  ChannelGroupID INT,
+  Description STRING,
+  Caption STRING,
+  ScreenName STRING,
+  SocialID STRING,
+  ObjectID STRING,
+  NumLikesORFollowers STRING,
+  NumLikesCount BIGINT,
+  NumComments BIGINT,
+  NumCommentsCount BIGINT,
+  NumShareCount BIGINT,
+  NumVideoViews BIGINT,
+  ShareCount BIGINT,
+  CreatedDate STRING,
+  SentimentType INT, 
+  PassivePositiveSentimentCount INT,
+  NegativeSentimentCount INT,
+  NeutralSentimentCount INT,
+  Tagid STRING,
+  UpperCategoryID INT,
+  IsDeleted BOOLEAN,
+  SimplifiedText STRING,
+  Rating DECIMAL(10, 2),
+  IsVerified BOOLEAN,
+  RetweetedStatusID BIGINT,
+  InReplyToStatusId BIGINT,
+  MediaType STRING,
+  Reach BIGINT,
+  Impression BIGINT,
+  Engagement BIGINT,
+  CategoryXML STRING,
+  PostSocialID STRING,
+  ParentSocialID STRING,
+  MediaEnum INT, 
+  Lang STRING,
+  LanguageName STRING,
+  PostType INT,
+  IsBrandPost BOOLEAN,
+  InstagramPostType INT, 
+  SettingID BIGINT,
+  FilterKeywords STRING,
+  quotedTweetCounts BIGINT,
+  InfluencerCategory ARRAY<STRING>, 
+  InfluencerCategoryID ARRAY<STRING>,
+  InfluencerCategoryName ARRAY<STRING>,
+  EntitySentimentJson STRING,
+  TypeofComment INT,  
+  EmotionScoreJson STRING,
+  ToxicityScoreJson STRING,
+  Categoryjson STRING,
+  NLPSentiContent STRING,
+  OrderID BIGINT,
+  IsHistoric BOOLEAN,
+  Hastagcloud ARRAY<STRING>,
+  MentionMD5 STRING,
+  Content STRING,
+  NRESentimentScore DOUBLE,
+  Contextualtagcloud ARRAY<STRING>, 
+  Keywordtagcloud ARRAY<STRING>, 
+  Emojitagcloud ARRAY<STRING>,
+  InsertedDate STRING,
+  AuthorSocialID STRING,
+  AuthorName STRING,
+  UserInfoScreenName STRING,
+  UserSentiment INT,
+  Bio STRING,
+  FollowersCount BIGINT,
+  FollowingCount BIGINT,
+  TweetCount BIGINT,
+  UserInfoIsVerified BOOLEAN,
+  PicUrl STRING,
+  URL STRING,
+  AttachmentXML STRING,
+  ConversationId STRING,
+  Title STRING
+)
+WITH (
+  KAFKA_TOPIC='AlertFinalData',
+  VALUE_FORMAT='JSON',
+  KEY_FORMAT='KAFKA',
+  TIMESTAMP='CreatedDate', 
+  TIMESTAMP_FORMAT='yyyy-MM-dd''T''HH:mm:ss'
 );
+
 """
 
 create_update_data_stream_query = """
@@ -362,7 +386,7 @@ EMIT CHANGES;
 
 """
 
-joined_2="""
+joined_2 = """
 CREATE TABLE koined_posts9 WITH (
     KEY_FORMAT = 'KAFKA',
     VALUE_FORMAT = 'JSON',
@@ -468,13 +492,15 @@ EMIT CHANGES;
 """
 
 creating_aggregated_table = """
-CREATE TABLE FINAL_AGGREGATED_TABLE AS
+SET 'ksql.streams.replication.factor' = '2';
+CREATE TABLE FINAL_AGGREGATED_TABLE
+WITH (TIMESTAMP='CreatedDate', KEY_FORMAT='KAFKA', TIMESTAMP_FORMAT='yyyy-MM-dd''T''HH:mm:ss', replicas=2, partitions=5) AS
 SELECT 
-    Composite_Key,
+    CompositeKey,
     LATEST_BY_OFFSET(BrandID) AS BrandID,
     LATEST_BY_OFFSET(BrandName) AS BrandName,
     LATEST_BY_OFFSET(CategoryGroupID) AS CategoryGroupID,
-    LATEST_BY_OFFSET(CategoryID) AS CategoryID,
+    LATEST_BY_OFFSET(CategoryID) AS CategoryID, 
     LATEST_BY_OFFSET(CategoryName) AS CategoryName,
     LATEST_BY_OFFSET(ChannelType) AS ChannelType,
     LATEST_BY_OFFSET(ChannelGroupID) AS ChannelGroupID,
@@ -532,14 +558,12 @@ SELECT
     LATEST_BY_OFFSET(PicUrl) AS PicUrl,
     LATEST_BY_OFFSET(AttachmentXML) AS AttachmentXML
 FROM ALERT_FINAL_DATA_STREAM
-GROUP BY Composite_Key;
-
+GROUP BY CompositeKey;
 """
-
 
 if __name__ == "__main__":
     # Create the final_data_stream streamALERT_FINAL_DATA_STREAM
-    execute_ksqldb_query(create_final_data_stream_query)
+    # execute_ksqldb_query(create_final_data_stream_query)
     # execute_ksqldb_query(create_update_data_stream_query)
     # execute_ksqldb_query(aggregated_2)
 

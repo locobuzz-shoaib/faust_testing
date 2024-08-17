@@ -8,7 +8,7 @@ from faker import Faker
 
 # Kafka configuration
 conf = {
-    'bootstrap.servers': '192.168.0.102:9092',  # Update with your Kafka broker(s)
+    'bootstrap.servers': '192.168.0.107:9092',  # Update with your Kafka broker(s)
     'client.id': 'alert_data_producer'
 }
 

@@ -2,17 +2,18 @@ from confluent_kafka import Consumer, KafkaError, KafkaException
 
 # Configuration for Kafka consumer
 conf = {
-    'bootstrap.servers': '192.168.0.102:9092',  # replace with your Kafka broker(s)
-    'group.id': 'my-consumer-group',        # replace with your consumer group ID
-    'auto.offset.reset': 'earliest'         # start from the earliest message if no offset is found
+    'bootstrap.servers': 'b-2.locobuzzuatmskcluster.4psd4m.c3.kafka.ap-south-1.amazonaws.com:9092,b-1.locobuzzuatmskcluster.4psd4m.c3.kafka.ap-south-1.amazonaws.com:9092',  # replace with your Kafka broker(s)
+    'group.id': 'my-consumer-group',  # replace with your consumer group ID
+    'auto.offset.reset': 'earliest'  # start from the earliest message if no offset is found
 }
 
 # Create Consumer instance
 consumer = Consumer(conf)
 
 # Subscribe to the topic
-topic = 'ALERT_FINAL_DATA_STREAM'  # replace with your Kafka topic
+topic = 'AlertFinalData'  # replace with your Kafka topic
 consumer.subscribe([topic])
+
 
 def consume_loop(consumer, topics):
     try:
@@ -30,13 +31,14 @@ def consume_loop(consumer, topics):
                     raise KafkaException(msg.error())
             else:
                 # Proper message
-                print(f"Consumed message from topic {msg.topic()}: {msg.value().decode('utf-8')}")
+                print(f"Consumed message from topic {msg.key()}: {msg.value().decode('utf-8')}")
 
     except KeyboardInterrupt:
         pass
     finally:
         # Close down consumer to commit final offsets.
         consumer.close()
+
 
 if __name__ == '__main__':
     consume_loop(consumer, [topic])

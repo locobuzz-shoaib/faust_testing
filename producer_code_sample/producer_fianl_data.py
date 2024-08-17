@@ -8,7 +8,7 @@ from faker import Faker
 
 # Kafka configuration
 conf = {
-    'bootstrap.servers': '192.168.0.178:9092',  # Update with your Kafka broker(s)
+    'bootstrap.servers': '192.168.0.107:9092',  # Update with your Kafka broker(s)
     'client.id': 'alert_data_producer'
 }
 
@@ -22,10 +22,10 @@ faker = Faker()
 # Function to generate random data
 def generate_alert_data(start_date):
     data = {
-        "BrandID": random.randint(1, 1000),
+        "BrandID": 12178,
         "BrandName": faker.company(),
         "CategoryGroupID": random.randint(1, 100),
-        "CategoryID": random.randint(1, 100),
+        "CategoryID": 1808,
         "CategoryName": faker.word(),
         "ChannelType": random.randint(1, 10),
         "ChannelGroupID": random.randint(1, 10),
@@ -108,7 +108,7 @@ def send_alert_data_to_kafka(topic, start_date, num_messages=10):
         #     "Composite_Key": composite_key,
         # })
 
-        data["Composite_Key"] = composite_key
+        data["CompositeKey"] = composite_key
         producer.produce(topic, key=key_data, value=json.dumps(data))
         producer.poll(1)
         time.sleep(1)
@@ -130,5 +130,5 @@ def generate_random_datetime_on_same_day(date):
 if __name__ == "__main__":
     start_date = datetime(2024, 8, 9)
     end_date = datetime(2024, 8, 10)
-    send_alert_data_to_kafka('aggregated_topic', start_date, num_messages=10)
+    send_alert_data_to_kafka('AlertFinalData', start_date, num_messages=10)
     print("Data sent to Kafka topic.")
