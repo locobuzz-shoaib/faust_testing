@@ -3,7 +3,12 @@ import json
 
 ksql_url = "http://192.168.0.107:8088/query"
 ksql_query = {
-    "ksql": "SELECT * FROM HIGH_ENGAGEMENT_TBALE WHERE NUMCOMMENTSCOUNT > 10000 AND NUMLIKESCOUNT > 20000 AND CREATEDDATE > '2024-08-08';",
+    "ksql": """SELECT TIMESTAMPTOSTRING(ROWTIME, 'yyyy-MM-dd HH:mm:ss', 'Asia/Kolkata') AS readable_timestamp,
+    compositekey 
+    FROM FINAL_AGGREGATED_TABLE 
+    WHERE numcommentscount > 5000 AND numlikescount > 8000 
+    HAVING COUNT(*) >= 11 
+    EMIT CHANGES;""",
     "streamsProperties": {
         "processing.guarantee": "exactly_once"
     }
@@ -16,5 +21,8 @@ if response.status_code == 200:
         if line:
             decoded_line = json.loads(line.decode('utf-8'))
             print(decoded_line)
+        else:
+            print("No data received")
+    print("Query executed successfully")
 else:
     print(f"Error: {response.status_code}, {response.text}")
