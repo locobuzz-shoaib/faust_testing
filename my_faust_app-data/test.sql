@@ -1,0 +1,6 @@
+CREATE TABLE ALERT_TABLE_226 WITH (
+ KAFKA_TOPIC= 'ALERT_TABLE_226',
+  KEY_FORMAT='KAFKA',
+    TIMESTAMP='CreatedDate',
+     TIMESTAMP_FORMAT='yyyy-MM-dd''T''HH:mm:ss') AS
+  SELECT * FROM FINAL_AGGREGATED_TABLE FINAL_AGGREGATED_TABLE WHERE BRANDID = 12709 AND CATEGORYID = 1808 AND (SimplifiedText LIKE ('% raw %') AND SimplifiedText LIKE ('% crab %') AND SimplifiedText LIKE ('% legs %')) AND (IsBrandPost IN (true,false)) AND (ChannelType IN (8,40,11,12,2,3,49,85,86))  AND (SentimentType IN (0,1)) EMIT CHANGES;

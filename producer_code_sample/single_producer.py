@@ -12,7 +12,7 @@ conf = {
 producer = Producer(conf)
 
 # JSON data to be sent
-comp_key = "17612_1808_f434f341-34ce-44d9-b3c6-4a0311ccea02_7af17e95-37db-4a32-9bc9-f7756b0fb0e4_e587408ff3eaa704fd9f3bc7f7c87e17_2024-08-18T12:37:49"
+comp_key = "17612_1808_46f50d94-bd00-41ee-89b9-cbc4fb0aa408_35f7a372-1255-4f70-94e8-8804009f387c_3ae4ffa2695f9df59d7824cc1e008db3_2024-08-18T15:43:14"
 cat_id, b_id, s_id, t_id, m_md5, c_date = comp_key.split("_")
 data = {
     "CompositeKey": comp_key,
@@ -52,5 +52,6 @@ def send_data_to_kafka(topic, data):
 # Usage
 if __name__ == "__main__":
     topic = 'AlertFinalData'  # Replace with your Kafka topic
-    send_data_to_kafka(topic, data)
-    print("Data sent to Kafka topic.", data)
+    for i in range(0, 10):
+        send_data_to_kafka(topic, data)
+        print("Data sent to Kafka topic.", data)

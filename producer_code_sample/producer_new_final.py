@@ -1,7 +1,8 @@
 import json
 import random
 import time
-from datetime import datetime,  time as dt_time
+from datetime import datetime, time as dt_time
+
 from confluent_kafka import Producer
 from faker import Faker
 
@@ -116,7 +117,8 @@ def generate_alert_data(start_date):
 # Function to send data to Kafka topic
 def send_alert_data_to_kafka(topic, start_date, num_messages=10):
     for _ in range(num_messages):
-        current_time = generate_random_datetime_on_same_day2(start_date, start_time=dt_time(9, 0), end_time=dt_time(17, 0))
+        current_time = generate_random_datetime_on_same_day2(start_date, start_time=dt_time(14, 0),
+                                                             end_time=dt_time(17, 0))
         data = generate_alert_data(current_time)
         composite_key = f"{data['BrandID']}_{data['CategoryID']}_{data['SocialID']}_{data['Tagid']}_{data['MentionMD5']}_{current_time}"
         data["CompositeKey"] = composite_key
@@ -138,6 +140,7 @@ def generate_random_datetime_on_same_day(date):
     formatted_datetime = random_datetime.strftime('%Y-%m-%dT%H:%M:%S')
     return formatted_datetime
 
+
 def generate_random_datetime_on_same_day2(date, start_time, end_time):
     start_datetime = datetime.combine(date, start_time)  # Start time of the range
     end_datetime = datetime.combine(date, end_time)  # End time of the range
@@ -148,6 +151,6 @@ def generate_random_datetime_on_same_day2(date, start_time, end_time):
 
 # Usage
 if __name__ == "__main__":
-    start_date = datetime(2024, 8, 17)
-    send_alert_data_to_kafka('AlertFinalData', start_date, num_messages=10)
+    start_date = datetime(2024, 8, 18)
+    send_alert_data_to_kafka('AlertFinalData', start_date, num_messages=100)
     print("Data sent to Kafka topic.")
