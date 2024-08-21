@@ -8,7 +8,7 @@ from faker import Faker
 
 # Kafka configuration
 conf = {
-    'bootstrap.servers': '192.168.0.107:9092',  # Update with your Kafka broker(s)
+    'bootstrap.servers': '172.18.244.10:9092',  # Update with your Kafka broker(s)
     'client.id': 'alert_data_producer'
 }
 
@@ -117,8 +117,8 @@ def generate_alert_data(start_date):
 # Function to send data to Kafka topic
 def send_alert_data_to_kafka(topic, start_date, num_messages=10):
     for _ in range(num_messages):
-        current_time = generate_random_datetime_on_same_day2(start_date, start_time=dt_time(14, 0),
-                                                             end_time=dt_time(17, 0))
+        current_time = generate_random_datetime_on_same_day2(start_date, start_time=dt_time(21, 0),
+                                                             end_time=dt_time(22, 30))
         data = generate_alert_data(current_time)
         composite_key = f"{data['BrandID']}_{data['CategoryID']}_{data['SocialID']}_{data['Tagid']}_{data['MentionMD5']}_{current_time}"
         data["CompositeKey"] = composite_key
@@ -151,6 +151,6 @@ def generate_random_datetime_on_same_day2(date, start_time, end_time):
 
 # Usage
 if __name__ == "__main__":
-    start_date = datetime(2024, 8, 18)
+    start_date = datetime(2024, 8, 20)
     send_alert_data_to_kafka('AlertFinalData', start_date, num_messages=100)
     print("Data sent to Kafka topic.")

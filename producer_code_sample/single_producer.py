@@ -4,7 +4,7 @@ from confluent_kafka import Producer
 
 # Kafka configuration
 conf = {
-    'bootstrap.servers': '192.168.0.107:9092',  # Replace with your Kafka broker
+    'bootstrap.servers': '172.18.244.10:9092',  # Replace with your Kafka broker
     'client.id': 'test_data_producer'
 }
 
@@ -12,7 +12,7 @@ conf = {
 producer = Producer(conf)
 
 # JSON data to be sent
-comp_key = "17612_1808_46f50d94-bd00-41ee-89b9-cbc4fb0aa408_35f7a372-1255-4f70-94e8-8804009f387c_3ae4ffa2695f9df59d7824cc1e008db3_2024-08-18T15:43:14"
+comp_key = "17612_1808_29803817-b5f0-4654-a56c-4405722e632b_98fb099c-c165-4479-a69e-0a33120d9e2e_5259223866ea0bd54ef660d2e245dfef_2024-08-20T21:10:18"
 cat_id, b_id, s_id, t_id, m_md5, c_date = comp_key.split("_")
 data = {
     "CompositeKey": comp_key,

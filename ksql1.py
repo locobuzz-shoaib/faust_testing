@@ -2,7 +2,7 @@ import requests
 
 KSQLDB_SERVER_URL = "http://a96f0aef8e7624f22a07fc3fc3ad88f2-1060712106.ap-south-1.elb.amazonaws.com"
 # ksqlDB server URL
-# KSQLDB_SERVER_URL = "http://192.168.0.107:8088"
+KSQLDB_SERVER_URL = "http://172.18.244.10:8088"
 
 # ksqlDB query to create the final_data_stream stream with composite keys
 create_final_data_stream_query = """
@@ -452,9 +452,8 @@ EMIT CHANGES;
 """
 
 creating_aggregated_table = """
-SET 'ksql.streams.replication.factor' = '2';
 CREATE TABLE FINAL_AGGREGATED_TABLE
-WITH (TIMESTAMP='CreatedDate', KEY_FORMAT='KAFKA', TIMESTAMP_FORMAT='yyyy-MM-dd''T''HH:mm:ss', replicas=2, partitions=2) AS
+WITH (KAFKA_TOPIC='FINAL_AGGREGATED_TABLE', TIMESTAMP='CreatedDate', KEY_FORMAT='KAFKA', TIMESTAMP_FORMAT='yyyy-MM-dd''T''HH:mm:ss') AS
 SELECT 
     CompositeKey,
     LATEST_BY_OFFSET(BrandID) AS BrandID,
@@ -482,7 +481,6 @@ SELECT
     LATEST_BY_OFFSET(UpperCategoryID) AS UpperCategoryID,
     LATEST_BY_OFFSET(IsDeleted) AS IsDeleted,
     LATEST_BY_OFFSET(SimplifiedText) AS SimplifiedText,
-    LATEST_BY_OFFSET(Rating) AS Rating,
     LATEST_BY_OFFSET(IsVerified) AS IsVerified,
     LATEST_BY_OFFSET(RetweetedStatusID) AS RetweetedStatusID,
     LATEST_BY_OFFSET(InReplyToStatusId) AS InReplyToStatusId,
@@ -499,7 +497,6 @@ SELECT
     LATEST_BY_OFFSET(InstagramPostType) AS InstagramPostType,
     LATEST_BY_OFFSET(SettingID) AS SettingID,
     LATEST_BY_OFFSET(quotedTweetCounts) AS quotedTweetCounts,
-    LATEST_BY_OFFSET(InfluencerCategory) AS InfluencerCategory,
     LATEST_BY_OFFSET(TypeofComment) AS TypeofComment,
     LATEST_BY_OFFSET(OrderID) AS OrderID,
     LATEST_BY_OFFSET(IsHistoric) AS IsHistoric,
@@ -522,17 +519,52 @@ GROUP BY CompositeKey;
 """
 
 creating_volumetric_condition = """
- CREATE TABLE ALERT_TABLE_240 WITH (                     KAFKA_TOPIC= 'ALERT_TABLE_240',                      KEY_FORMAT='KAFKA',                      TIMESTAMP='CreatedDate',                      TIMESTAMP_FORMAT='yyyy-MM-dd''T''HH:mm:ss') AS                      SELECT * FROM FINAL_AGGREGATED_TABLE FINAL_AGGREGATED_TABLE                      WHERE BRANDID = 12169 AND CATEGORYID = 1808 AND                     (ChannelType IN (8,40,11,12,2,3,49,85,86,16,78,81)) AND (SentimentType IN (0,1)) AND (SimplifiedText LIKE ('% Hi %') OR SimplifiedText LIKE ('% hi %') OR SimplifiedText LIKE ('% need %') OR SimplifiedText LIKE ('% buisnesses %') OR SimplifiedText LIKE ('% professional %') OR SimplifiedText LIKE ('% reviews %'))   
- EMIT CHANGES; 
+CREATE TABLE NEGATIVE_SENTIMENT_HOPPING_WINDOW2 AS
+SELECT
+    COUNT(*) AS negative_mentions_count,
+    SUM(CASE WHEN SentimentType = 1 OR SentimentType = 2 THEN 1 ELSE 0 END) AS total_negative_sentiment,
+    MAX(STRINGTOTIMESTAMP(createddate, 'yyyy-MM-dd''T''HH:mm:ss')) AS last_mention_time
+FROM
+    ALERT_FINAL_DATA_STREAM
+WINDOW HOPPING (SIZE 1 HOUR, ADVANCE BY 1 MINUTE)
+WHERE
+    SentimentType = 1 OR SentimentType = 2
+HAVING
+    COUNT(*) >= 1;
+
 """
+
+creating_windowing="""
+CREATE TABLE NEGATIVE_SENTIMENT_HOPPING_WINDOW115 AS
+SELECT
+    PostSocialID,
+    Compositekey,
+    COUNT(*) AS negative_mentions_count,
+    SUM(CASE WHEN SentimentType = 1 OR SentimentType = 2 THEN 1 ELSE 0 END) AS total_negative_sentiment,
+    MAX(STRINGTOTIMESTAMP(CreatedDate, 'yyyy-MM-dd''T''HH:mm:ss')) AS last_mention_time
+FROM
+    ALERT_FINAL_DATA_STREAM
+WINDOW HOPPING (SIZE 1 HOUR, ADVANCE BY 1 MINUTE)
+WHERE
+    SentimentType = 1 OR SentimentType = 2
+GROUP BY
+    PostSocialID, Compositekey
+HAVING
+    COUNT(*) >= 5;
+
+
+
+"""
+
 if __name__ == "__main__":
     # Create the final_data_stream streamALERT_FINAL_DATA_STREAM
     # execute_ksqldb_query(create_final_data_stream_query)
-    # execute_ksqldb_query("SELECT * FROM HIGH_ENGAGEMENT_TBALE WHERE NUMCOMMENTSCOUNT > 10000 AND NUMLIKESCOUNT > 20000 AND CREATEDDATE > '2024-08-08';")
+    # execute_ksqldb_query("CREATE STREAM FINAL_AGGREGATED_STREAM AS SELECT * FROM FINAL_AGGREGATED_TABLE EMIT CHANGES;")
     # execute_ksqldb_query(aggregated_2)
 
     # execute_ksqldb_query(creating_aggregated_table)
-    execute_ksqldb_query(creating_volumetric_condition)
+    # execute_ksqldb_query(creating_volumetric_condition)
+    execute_ksqldb_query(creating_windowing)
 # CLEANUP_POLICY='delete', KAFKA_TOPIC='LATEST_ALERT_STREAM', PARTITIONS=10, REPLICAS=1, RETENTION_MS=604800000) AS
 """
 [{'@type': 'currentStatus', 'statementText': "CREATE OR REPLACE STREAM JOINED_ALERT_STREAM WITH (CLEANUP_POLICY='delete', KAFKA_TOPIC='JOINED_ALERT_STREAM', PARTITIONS=10, REPLICAS=1, RETENTION_MS=604800000) AS SELECT\n  A.BRANDID BRANDID,\n  A.BRANDNAME BRANDNAME,\n  A.CATEGORYGROUPID CATEGORYGROUPID,\n  A.CATEGORYID CATEGORYID,\n  A.CATEGORYNAME CATEGORYNAME,\n  A.CHANNELTYPE CHANNELTYPE,\n  A.CHANNELGROUPID CHANNELGROUPID,\n  A.DESCRIPTION DESCRIPTION,\n  A.SOCIALID A_SOCIALID,\n  A.NUMLIKESORFOLLOWERS NUMLIKESORFOLLOWERS,\n  COALESCE(U.NUMLIKESCOUNT, A.NUMLIKESCOUNT) NUMLIKESCOUNT,\n  COALESCE(U.NUMCOMMENTS, A.NUMCOMMENTS) NUMCOMMENTS,\n  COALESCE(U.NUMCOMMENTSCOUNT, A.NUMCOMMENTSCOUNT) NUMCOMMENTSCOUNT,\n  COALESCE(U.NUMSHARECOUNT, A.NUMSHARECOUNT) NUMSHARECOUNT,\n  COALESCE(U.NUMVIDEOVIEWS, A.NUMVIDEOVIEWS) NUMVIDEOVIEWS,\n  A.SHARECOUNT SHARECOUNT,\n  A.CREATEDDATE A_CREATEDDATE,\n  A.SENTIMENTTYPE SENTIMENTTYPE,\n  A.PASSIVEPOSITIVESENTIMENTCOUNT PASSIVEPOSITIVESENTIMENTCOUNT,\n  A.NEGATIVESENTIMENTCOUNT NEGATIVESENTIMENTCOUNT,\n  A.NEUTRALSENTIMENTCOUNT NEUTRALSENTIMENTCOUNT,\n  A.TAGID TAGID,\n  A.UPPERCATEGORYID UPPERCATEGORYID,\n  A.ISDELETED ISDELETED,\n  A.SIMPLIFIEDTEXT SIMPLIFIEDTEXT,\n  A.RATING RATING,\n  A.ISVERIFIED ISVERIFIED,\n  A.RETWEETEDSTATUSID RETWEETEDSTATUSID,\n  A.INREPLYTOSTATUSID INREPLYTOSTATUSID,\n  A.MEDIATYPE MEDIATYPE,\n  A.REACH REACH,\n  A.IMPRESSION IMPRESSION,\n  A.ENGAGEMENT ENGAGEMENT,\n  A.CATEGORYXML CATEGORYXML,\n  A.MEDIAENUM MEDIAENUM,\n  A.LANG LANG,\n  A.LANGUAGENAME LANGUAGENAME,\n  A.POSTTYPE POSTTYPE,\n  A.ISBRANDPOST ISBRANDPOST,\n  A.INSTAGRAMPOSTTYPE INSTAGRAMPOSTTYPE,\n  A.SETTINGID SETTINGID,\n  A.QUOTEDTWEETCOUNTS QUOTEDTWEETCOUNTS,\n  A.INFLUENCERCATEGORY INFLUENCERCATEGORY,\n  A.TYPEOFCOMMENT TYPEOFCOMMENT,\n  A.ORDERID ORDERID,\n  A.ISHISTORIC ISHISTORIC,\n  A.MENTIONMD5 MENTIONMD5,\n  A.CONTENT CONTENT,\n  A.NRESENTIMENTSCORE NRESENTIMENTSCORE,\n  A.INSERTEDDATE INSERTEDDATE,\n  A.AUTHORSOCIALID AUTHORSOCIALID,\n  A.AUTHORNAME AUTHORNAME,\n  A.USERINFOSCREENNAME USERINFOSCREENNAME,\n  A.BIO BIO,\n  A.FOLLOWERSCOUNT FOLLOWERSCOUNT,\n  A.FOLLOWINGCOUNT FOLLOWINGCOUNT,\n  A.TWEETCOUNT TWEETCOUNT,\n  A.USERINFOISVERIFIED USERINFOISVERIFIED,\n  A.PICURL PICURL,\n  A.ATTACHMENTXML ATTACHMENTXML\nFROM ALERT_FINAL_DATA_STREAM A\nLEFT OUTER JOIN ALERT_UPDATED_DATA_STREAM U WITHIN 72 HOURS ON ((A.SOCIALID = U.SOCIALID))\nWHERE (A.CREATEDDATE = U.CREATEDDATE)\nEMIT CHANGES;", 'commandId': 'stream/`JOINED_ALERT_STREAM`/create', 'commandStatus': {'status': 'SUCCESS', 'message': 'Created query with ID CSAS_JOINED_ALERT_STREAM_19', 'queryId': 'CSAS_JOINED_ALERT_STREAM_19'}, 'commandSequenceNumber': 20, 'warnings': [{'message': 'DEPRECATION NOTICE: Stream-stream joins statements without a GRACE PERIOD will not be accepted in a future ksqlDB version.\nPlease use the GRACE PERIOD clause as specified in https://docs.ksqldb.io/en/latest/developer-guide/ksqldb-reference/select-push-query/'}]}]
