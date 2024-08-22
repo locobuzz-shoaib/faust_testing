@@ -13,6 +13,12 @@ producer_conf = {
     'bootstrap.servers': 'localhost:9092'
 }
 
+
+ksql_query = {
+    "ksql": """SELECT *, TIMESTAMPTOSTRING(CREATEDDATE, 'yyyy-MM-dd''T''HH:mm:ssXXX', 'Asia/Kolkata') AS readable_timestamp                         FROM FINAL_AGGREGATED_TABLE                          WHERE BRANDID = 12178 AND CATEGORYID = 1808                 AND CREATEDDATE >= '2024-08-20T10:42:29'                 AND (ChannelType IN (78,81));""",
+    "streamsProperties": {}
+}
+
 # Create Kafka Producer
 producer = Producer(producer_conf)
 

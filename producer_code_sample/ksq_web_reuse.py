@@ -3,19 +3,19 @@ import json
 import time
 import sys
 
-ksql_url = "http://192.168.0.107:8088/query"
+ksql_url = "http://k8s-stagingl-ksqldbse-f8842d2fe8-49766aa07935ea85.elb.ap-south-1.amazonaws.com/query"
+# query = "SELECT *\n                        FROM FINAL_AGGREGATED_TABLE \n                        WHERE BRANDID = 12168 AND CATEGORYID = 1808\n                AND (ChannelType IN (18,19) AND SimplifiedText LIKE ('% locobuzztest %')) AND NumShareCount = 1 AND NumCommentsCount = 2 AND NumLikesCount = 2 AND NumVideoViews = 2 AND Engagement = 5\n                AND  STRINGTOTIMESTAMP(createddate, 'yyyy-MM-dd''T''HH:mm:ss')  >= \n                STRINGTOTIMESTAMP('2024-08-20T15:04:23', 'yyyy-MM-dd''T''HH:mm:ss');"
+query="""
+SELECT *\n                        FROM FINAL_AGGREGATED_TABLE \n                        WHERE BRANDID = 12168 AND CATEGORYID = 1808\n                AND ChannelType IN (18,19) AND (CASE WHEN SimplifiedText LIKE '% locobuzztest %' THEN 1 ELSE 0 END=1) AND NumShareCount = 1 AND NumCommentsCount = 2 AND NumLikesCount = 2 AND NumVideoViews = 2 AND Engagement = 5\n                AND  STRINGTOTIMESTAMP(createddate, 'yyyy-MM-dd''T''HH:mm:ss')  >= \n                STRINGTOTIMESTAMP('2024-08-20T15:21:38', 'yyyy-MM-dd''T''HH:mm:ss');
+
+"""
 ksql_query = {
-    "ksql": """SELECT 
-  createddate,
-  TIMESTAMPTOSTRING(ROWTIME, 'yyyy-MM-dd''T''HH:mm:ssXXX', 'Asia/Kolkata') AS readable_timestamp
-FROM 
-  FINAL_AGGREGATED_TABLE 
-WHERE 
-  STRINGTOTIMESTAMP(createddate, 'yyyy-MM-dd''T''HH:mm:ss') > STRINGTOTIMESTAMP('2024-08-18T16:45:21', 'yyyy-MM-dd''T''HH:mm:ss');""",
+    "ksql": f'{query}',
     "streamsProperties": {}
 }
 
 response = requests.post(ksql_url, headers={'Content-Type': 'application/vnd.ksql.v1+json'},
+
                          data=json.dumps(ksql_query), stream=True)
 
 # Define a timeout period in seconds
